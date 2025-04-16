@@ -28,7 +28,7 @@ pip install -r requirements.txt
     "access_key": "YOUR_ACCESS_KEY",
     "secret_access_key": "YOUR_SECRET_ACCESS_KEY",
     "session_token": "OPTIONAL",
-    "region": "us-east-1",
+    "region": "DEFAULT_REGION",
     "buckets": ["optional-bucket-name"]
 }
 ```
@@ -38,7 +38,7 @@ pip install -r requirements.txt
 Run the enumerator:
 
 ```bash
-python aws_enumerator.py
+python3 aws_enumerator.py
 ```
 
 ## Notes
