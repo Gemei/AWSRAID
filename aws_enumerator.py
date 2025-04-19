@@ -1,6 +1,6 @@
 import sys
 
-from colorama import init, Fore, Style
+from colorama import init, Fore, init
 from modules.config_loader import load_config
 from modules.aws_clients import initialize_aws_clients
 from modules.services.sts import sts_init_enum
@@ -33,7 +33,7 @@ session, clients = initialize_aws_clients(access_key, secret_access_key, session
 globals().update(clients)
 
 def main():
-    print(f"{Fore.GREEN}Starting AWS Enumeration Script...{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
     sts_init_enum(clients["sts_client"])
     iam_init_enum(clients["iam_client"], clients["sts_client"])
     ec2_init_enum(clients["ec2_client"])

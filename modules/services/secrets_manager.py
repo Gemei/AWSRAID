@@ -1,12 +1,13 @@
 import json
-from colorama import Fore, Style
+from colorama import Fore
 from modules.utils import custom_serializer
+
 
 def secrets_manager_init_enum(secrets_client):
     list_secrets_manager(secrets_client)
 
 def list_secrets_manager(secrets_client):
-    print(f"{Fore.GREEN}Enumerating Secrets Manager...{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}Enumerating Secrets Manager...")
     try:
         secrets_list = secrets_client.list_secrets()
         if secrets_list:
@@ -14,8 +15,8 @@ def list_secrets_manager(secrets_client):
                 name = secret["Name"]
                 try:
                     secret_dump = secrets_client.get_secret_value(SecretId=name)
-                    print(f"{Fore.MAGENTA}{json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}{Style.RESET_ALL}")
+                    print(f"{Fore.MAGENTA}{json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}")
                 except:
-                    print(f"{Fore.LIGHTBLACK_EX}Failed to retrieve secret: {name}{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTBLACK_EX}Failed to retrieve secret: {name}")
     except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to list secrets{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTBLACK_EX}Failed to list secrets")

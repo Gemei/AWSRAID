@@ -1,16 +1,17 @@
 import json
-from colorama import Fore, Style
+from colorama import Fore
 from modules.utils import custom_serializer
+
 
 def sqs_init_enum(sqs_client):
     list_sqs_queues(sqs_client)
 
 def list_sqs_queues(sqs_client):
-    print(f"{Fore.GREEN}Enumerating SQS Queues...{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}Enumerating SQS Queues...")
     try:
         queues = sqs_client.list_queues().get("QueueUrls", [])
         for queue_url in queues:
-            print(f"{Fore.MAGENTA}Queue URL: {queue_url}{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}Queue URL: {queue_url}")
             try:
                 response = sqs_client.receive_message(
                     QueueUrl=queue_url,
@@ -21,8 +22,8 @@ def list_sqs_queues(sqs_client):
                     WaitTimeSeconds=10
                 )
                 messages = response.get('Messages', [])
-                print(f"{Fore.MAGENTA}Messages: {json.dumps(messages, indent=4, sort_keys=True, default=custom_serializer)}{Style.RESET_ALL}")
+                print(f"{Fore.MAGENTA}Messages: {json.dumps(messages, indent=4, sort_keys=True, default=custom_serializer)}")
             except:
-                print(f"{Fore.LIGHTBLACK_EX}Failed to receive SQS messages{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTBLACK_EX}Failed to receive SQS messages")
     except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to list SQS queues{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTBLACK_EX}Failed to list SQS queues")

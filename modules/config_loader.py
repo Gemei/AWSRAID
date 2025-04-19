@@ -1,10 +1,11 @@
 import json, sys, os
-from colorama import Fore, Style
+from colorama import Fore
+
 
 def load_config(file_path):
     if not os.path.exists(file_path):
-        print(f"{Fore.RED}Config file '{file_path}' not found.{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}Creating a template. Please fill in the values and rerun the script.{Style.RESET_ALL}")
+        print(f"{Fore.RED}Config file '{file_path}' not found.")
+        print(f"{Fore.YELLOW}Creating a template. Please fill in the values and rerun the script.")
         default_config = {
             "access_key": "YOUR_ACCESS_KEY",
             "secret_access_key": "YOUR_SECRET_ACCESS_KEY",
