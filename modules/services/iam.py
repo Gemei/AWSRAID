@@ -5,40 +5,44 @@ from modules.utils import custom_serializer
 
 
 def iam_init_enum(iam_client, sts_client):
-    list_iam_policies(iam_client)
-    list_iam_roles(iam_client)
-    list_current_user_policies(iam_client, sts_client)
+    try:
+        sts_info = sts_client.get_caller_identity()
 
-def list_iam_policies(iam_client):
+        user_name = sts_info["Arn"].split("/")[-1]
+        aws_id = sts_info["Account"]
+        print(aws_id)
+
+        list_iam_policies(iam_client, aws_id)
+        list_iam_roles(iam_client, aws_id)
+        list_current_user_policies(iam_client, user_name)
+    except:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to call sts to get current user and AWS account ID.{Style.RESET_ALL}")
+
+
+def list_iam_policies(iam_client, aws_id):
     print(f"{Fore.GREEN}Listing IAM Policies...{Style.RESET_ALL}")
     try:
         policies = iam_client.list_policies(Scope='All').get("Policies", [])
         for policy in policies:
-            print(f"{Fore.CYAN}Policy: {policy['PolicyName']} | ARN: {policy['Arn']}{Style.RESET_ALL}")
-            describe_iam_policy(iam_client, policy['Arn'])
+            if(aws_id in policy['Arn']): # Only print customer managed policies
+                print(f"{Fore.CYAN}Policy: {policy['PolicyName']} | ARN: {policy['Arn']}{Style.RESET_ALL}")
+                describe_iam_policy(iam_client, policy['Arn'])
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM policies{Style.RESET_ALL}")
 
-def list_iam_roles(iam_client):
+def list_iam_roles(iam_client, aws_id):
     print(f"{Fore.GREEN}Enumerating IAM Roles...{Style.RESET_ALL}")
     try:
         roles = iam_client.list_roles().get("Roles", [])
         for role in roles:
-            print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}{Style.RESET_ALL}")
-            describe_iam_role(iam_client, role['RoleName'])
+            if (aws_id in role['Arn']):  # Only print customer managed roles
+                print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}{Style.RESET_ALL}")
+                describe_iam_role(iam_client, role['RoleName'])
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM roles{Style.RESET_ALL}")
 
-def list_current_user_policies(iam_client, sts_client):
+def list_current_user_policies(iam_client, user_name):
     print(f"{Fore.GREEN}Enumerating Current User Policies...{Style.RESET_ALL}")
-    try:
-        user_arn = sts_client.get_caller_identity()["Arn"]
-        user_name = user_arn.split("/")[-1]
-        print(f"{Fore.CYAN}User: {user_name}{Style.RESET_ALL}")
-    except:
-        print(f"{Fore.LIGHTRED_EX}Failed to call sts to get current user{Style.RESET_ALL}")
-        return
-
     try:
         inline_policies = iam_client.list_user_policies(UserName=user_name).get("PolicyNames", [])
         if inline_policies:

@@ -1,3 +1,5 @@
+import sys
+
 from colorama import init, Fore, Style
 from modules.config_loader import load_config
 from modules.aws_clients import initialize_aws_clients
@@ -10,10 +12,11 @@ from modules.services.cognito import cognito_init_enum
 from modules.services.macie import macie_init_enum
 from modules.services.ssm import ssm_init_enum
 from modules.services.elastic_beanstalk import eb_init_enum
-from modules.services.secrets_manager import sm_init_enum
+from modules.services.secrets_manager import secrets_manager_init_enum
 from modules.services.aws_lambda import lambda_init_enum
 from modules.services.sqs import sqs_init_enum
 from modules.services.s3 import s3_init_enum
+from modules.services.code_commit import code_commit_init_enum
 
 init(autoreset=True)
 
@@ -40,11 +43,16 @@ def main():
     macie_init_enum(clients["macie_client"])
     ssm_init_enum(clients["ssm_client"])
     eb_init_enum(clients["elasticbeanstalk_client"])
-    sm_init_enum(clients["secrets_client"])
-    lambda_init_enum(clients["lambda_client"])
+    secrets_manager_init_enum(clients["secrets_client"])
+    #lambda_init_enum(clients["lambda_client"])
     sqs_init_enum(clients["sqs_client"])
     s3_init_enum(clients["s3_client"], clients["unsigned_s3_client"], buckets)
+    code_commit_init_enum(clients["codecommit_client"])
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nCtrl+C pressed. Exiting.")
+        sys.exit(0)

@@ -1,9 +1,9 @@
 from colorama import Fore, Style
 
 def eb_init_enum(elasticbeanstalk_client):
-    enumerate_elastic_beanstalk(elasticbeanstalk_client)
+    list_elastic_beanstalk(elasticbeanstalk_client)
 
-def enumerate_elastic_beanstalk(elasticbeanstalk_client):
+def list_elastic_beanstalk(elasticbeanstalk_client):
     print(f"{Fore.GREEN}Enumerating Elastic Beanstalk Applications...{Style.RESET_ALL}")
     try:
         apps = elasticbeanstalk_client.describe_applications().get("Applications", [])

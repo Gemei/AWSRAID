@@ -3,9 +3,9 @@ import json
 from modules.utils import custom_serializer
 
 def lambda_init_enum(lambda_client):
-    enumerate_lambda(lambda_client)
+    list_lambda_functions(lambda_client)
 
-def enumerate_lambda(lambda_client):
+def list_lambda_functions(lambda_client):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...{Style.RESET_ALL}")
     try:
         functions = lambda_client.list_functions().get("Functions", [])
@@ -17,7 +17,8 @@ def enumerate_lambda(lambda_client):
                     FunctionName=f"{function['FunctionName']}",
                     InvocationType='RequestResponse',
                     LogType='Tail',
-                    Payload=json.dumps(payload)
+                    Payload=json.dumps(payload),
+                    Qualifier=function.get('Version', '$LATEST')
                 )
                 response_payload = json.loads(response['Payload'].read().decode('utf-8'))
                 print(f"{Fore.MAGENTA}Function: {function['FunctionName']} | \nResponse:\n {json.dumps(response_payload, indent=4, sort_keys=True, default=custom_serializer)}{Style.RESET_ALL}")

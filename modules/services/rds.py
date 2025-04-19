@@ -1,9 +1,9 @@
 from colorama import Fore, Style
 
 def rds_init_enum(rds_client):
-    enumerate_rds_instances(rds_client)
+    list_rds_instances(rds_client)
 
-def enumerate_rds_instances(rds_client):
+def list_rds_instances(rds_client):
     print(f"{Fore.GREEN}Enumerating RDS Instances...{Style.RESET_ALL}")
     try:
         dbs = rds_client.describe_db_instances().get("DBInstances", [])

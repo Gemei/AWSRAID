@@ -1,9 +1,15 @@
 import json,sys,os
+import shutil
+
+import boto3.exceptions
 from colorama import Fore, Style
-from modules.utils import custom_serializer, create_bucket_dirs, delete_bucket_dirs
+from modules.utils import custom_serializer
 
 def s3_init_enum(s3_client, s3_unsigned_client, buckets):
-    list_buckets(s3_client)
+    found_buckets = list_buckets(s3_client)
+    if found_buckets:
+        buckets = list(buckets or []) # Prevent list type error
+        buckets += found_buckets
     download_private_bucket(s3_client, buckets)
     list_public_buckets(s3_unsigned_client, buckets)
     download_public_bucket(s3_unsigned_client, buckets)
@@ -11,12 +17,16 @@ def s3_init_enum(s3_client, s3_unsigned_client, buckets):
 
 def list_buckets(s3_client):
     try:
-        print(f"{Fore.GREEN}Listing S3 Buckets...{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}Enumerating S3 Buckets...{Style.RESET_ALL}")
+        found_buckets = []
         buckets = s3_client.list_buckets().get("Buckets", [])
         for bucket in buckets:
             print(f"{Fore.MAGENTA}Found bucket: {bucket['Name']}{Style.RESET_ALL}")
+            found_buckets.append(bucket['Name'])
+        return found_buckets
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list S3 buckets{Style.RESET_ALL}")
+        return []
 
 def download_private_bucket(s3_client, buckets):
     download_bucket_objects(s3_client, buckets)
@@ -54,6 +64,19 @@ def get_bucket_policy(s3_client, buckets):
     else:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping bucket policy check")
 
+def create_bucket_dirs(bucket):
+    try:
+        os.mkdir(bucket)
+    except:
+        pass
+
+def delete_bucket_dirs(bucket):
+    try:
+        if os.path.exists(bucket) and os.path.isdir(bucket) and not os.listdir(bucket):
+            shutil.rmtree(bucket)
+    except:
+        pass
+
 def download_bucket_objects(s3_client, buckets):
     if not buckets:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping download bucket objects{Style.RESET_ALL}")
@@ -78,11 +101,20 @@ def download_bucket_objects(s3_client, buckets):
                 try:
                     with open(file_name, "wb") as file:
                         s3_client.download_fileobj(bucket, file_name, file)
+                except KeyboardInterrupt:
+                    print("\nCtrl+C pressed. Exiting.")
+                    sys.exit(0)
                 except:
-                    print(f"\n{Fore.LIGHTBLACK_EX}Failed to download {file_name} from {bucket}{Style.RESET_ALL}")
+                    # Clear the progress line first
+                    sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
+                    print(f"{Fore.LIGHTBLACK_EX}Failed to download {file_name} from {bucket}{Style.RESET_ALL}")
             print()
             os.chdir("..")
+        except KeyboardInterrupt:
+            print("\nCtrl+C pressed. Exiting.")
+            sys.exit(0)
         except:
-            print(f"{Fore.LIGHTBLACK_EX}Can't list bucket: {bucket}{Style.RESET_ALL}")
+            sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
+            print(f"{Fore.LIGHTBLACK_EX}Can't list bucket: {bucket} ({str(e)}){Style.RESET_ALL}")
             os.chdir("..")
             delete_bucket_dirs(bucket)

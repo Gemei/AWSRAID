@@ -3,9 +3,9 @@ from colorama import Fore, Style
 from modules.utils import custom_serializer
 
 def sqs_init_enum(sqs_client):
-    enumerate_sqs(sqs_client)
+    list_sqs_queues(sqs_client)
 
-def enumerate_sqs(sqs_client):
+def list_sqs_queues(sqs_client):
     print(f"{Fore.GREEN}Enumerating SQS Queues...{Style.RESET_ALL}")
     try:
         queues = sqs_client.list_queues().get("QueueUrls", [])
