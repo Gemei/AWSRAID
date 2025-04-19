@@ -44,7 +44,7 @@ def main():
     ssm_init_enum(clients["ssm_client"])
     eb_init_enum(clients["elasticbeanstalk_client"])
     secrets_manager_init_enum(clients["secrets_client"])
-    #lambda_init_enum(clients["lambda_client"])
+    lambda_init_enum(clients["lambda_client"])
     sqs_init_enum(clients["sqs_client"])
     s3_init_enum(clients["s3_client"], clients["unsigned_s3_client"], buckets)
     code_commit_init_enum(clients["codecommit_client"])
