@@ -5,12 +5,16 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 
 ## Features
 
-- Enumerates IAM roles and policies
-- Lists EC2 instances and EBS volumes/snapshots
-- Identifies RDS databases and Cognito user pools
-- Scans SSM parameters, Macie findings, Secrets Manager secrets
-- Invokes Lambda functions and inspects responses
-- Checks public S3 access and downloads bucket contents
+- Enumerates customer-managed IAM roles and policies
+- Lists EC2 instances
+- Lists EBS volumes and snapshots (Currently, you would need to manually check for public snapshots using AWS account ID)
+- Identifies RDS databases
+- Lists Cognito user pools
+- Lists SSM parameters, Macie findings, and Secrets Manager secrets
+- Lists Lambda functions and invokes them to inspect responses
+- Lists S3 buckets, checks for public access, and downloads bucket contents
+- Lists Elastic Beanstalk applications
+- Lists CodeCommit repositories and enumerates branches for each repository
 
 ## Setup
 
