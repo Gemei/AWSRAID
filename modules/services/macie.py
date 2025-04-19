@@ -1,5 +1,8 @@
 from colorama import Fore, Style
 
+def macie_init_enum(macie_client):
+    enumerate_macie_findings(macie_client)
+
 def enumerate_macie_findings(macie_client):
     print(f"{Fore.GREEN}Enumerating Macie Findings...{Style.RESET_ALL}")
     try:

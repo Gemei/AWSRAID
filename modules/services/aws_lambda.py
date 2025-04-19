@@ -2,6 +2,9 @@ from colorama import Fore, Style
 import json
 from modules.utils import custom_serializer
 
+def lambda_init_enum(lambda_client):
+    enumerate_lambda(lambda_client)
+
 def enumerate_lambda(lambda_client):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...{Style.RESET_ALL}")
     try:

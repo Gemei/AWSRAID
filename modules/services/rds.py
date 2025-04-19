@@ -1,5 +1,8 @@
 from colorama import Fore, Style
 
+def rds_init_enum(rds_client):
+    enumerate_rds_instances(rds_client)
+
 def enumerate_rds_instances(rds_client):
     print(f"{Fore.GREEN}Enumerating RDS Instances...{Style.RESET_ALL}")
     try:

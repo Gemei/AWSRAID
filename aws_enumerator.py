@@ -1,19 +1,19 @@
 from colorama import init, Fore, Style
 from modules.config_loader import load_config
 from modules.aws_clients import initialize_aws_clients
-from modules.services.sts import whoami
-from modules.services.iam import enumerate_iam_roles, enumerate_current_user_policies
-from modules.services.ec2 import enumerate_ec2
-from modules.services.ebs import enumerate_ebs_volumes, enumerate_ebs_snapshots
-from modules.services.rds import enumerate_rds_instances
-from modules.services.cognito import enumerate_cognito_users
-from modules.services.macie import enumerate_macie_findings
-from modules.services.ssm import enumerate_ssm_parameters
-from modules.services.elastic_beanstalk import enumerate_elastic_beanstalk
-from modules.services.secrets_manager import enumerate_secrets_manager
-from modules.services.aws_lambda import enumerate_lambda
-from modules.services.sqs import enumerate_sqs
-from modules.services.s3 import download_bucket, enumerate_public_buckets, bucket_policy
+from modules.services.sts import sts_init_enum
+from modules.services.iam import iam_init_enum
+from modules.services.ec2 import ec2_init_enum
+from modules.services.ebs import ebs_init_enum
+from modules.services.rds import rds_init_enum
+from modules.services.cognito import cognito_init_enum
+from modules.services.macie import macie_init_enum
+from modules.services.ssm import ssm_init_enum
+from modules.services.elastic_beanstalk import eb_init_enum
+from modules.services.secrets_manager import sm_init_enum
+from modules.services.aws_lambda import lambda_init_enum
+from modules.services.sqs import sqs_init_enum
+from modules.services.s3 import s3_init_enum
 
 init(autoreset=True)
 
@@ -24,30 +24,27 @@ access_key = config.get("access_key")
 secret_access_key = config.get("secret_access_key")
 session_token = config.get("session_token") or None
 region = config.get("region", "us-east-1")
-buckets = config.get("buckets", []) or None
+buckets = config.get("buckets") or None
 
 session, clients = initialize_aws_clients(access_key, secret_access_key, session_token, region)
 globals().update(clients)
 
 def main():
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...{Style.RESET_ALL}")
-    whoami(clients["sts_client"])
-    enumerate_iam_roles(clients["iam_client"])
-    enumerate_current_user_policies(clients["sts_client"], clients["iam_client"])
-    enumerate_ec2(clients["ec2_client"])
-    enumerate_ebs_volumes(clients["ec2_client"])
-    enumerate_ebs_snapshots(clients["ec2_client"], clients["sts_client"])
-    enumerate_rds_instances(clients["rds_client"])
-    enumerate_cognito_users(clients["cognito_client"])
-    enumerate_macie_findings(clients["macie_client"])
-    enumerate_ssm_parameters(clients["ssm_client"])
-    enumerate_elastic_beanstalk(clients["elasticbeanstalk_client"])
-    enumerate_secrets_manager(clients["secrets_client"])
-    enumerate_lambda(clients["lambda_client"])
-    enumerate_sqs(clients["sqs_client"])
-    download_bucket(clients["s3_client"], buckets)
-    enumerate_public_buckets(clients["unsigned_s3_client"], buckets)
-    bucket_policy(clients["s3_client"], buckets)
+    sts_init_enum(clients["sts_client"])
+    iam_init_enum(clients["iam_client"], clients["sts_client"])
+    ec2_init_enum(clients["ec2_client"])
+    ebs_init_enum(clients["ec2_client"], clients["sts_client"])
+    rds_init_enum(clients["rds_client"])
+    cognito_init_enum(clients["cognito_client"])
+    macie_init_enum(clients["macie_client"])
+    ssm_init_enum(clients["ssm_client"])
+    eb_init_enum(clients["elasticbeanstalk_client"])
+    sm_init_enum(clients["secrets_client"])
+    lambda_init_enum(clients["lambda_client"])
+    sqs_init_enum(clients["sqs_client"])
+    s3_init_enum(clients["s3_client"], clients["unsigned_s3_client"], buckets)
+
 
 if __name__ == "__main__":
     main()

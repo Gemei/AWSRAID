@@ -1,5 +1,8 @@
 from colorama import Fore, Style
 
+def ssm_init_enum(ssm_client):
+    enumerate_ssm_parameters(ssm_client)
+
 def enumerate_ssm_parameters(ssm_client):
     print(f"{Fore.GREEN}Enumerating SSM Parameters...{Style.RESET_ALL}")
     try:

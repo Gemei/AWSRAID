@@ -1,5 +1,9 @@
 from colorama import Fore, Style
 
+def ebs_init_enum(ec2_client, sts_client):
+    enumerate_ebs_volumes(ec2_client)
+    enumerate_ebs_snapshots(ec2_client, sts_client)
+
 def enumerate_ebs_volumes(ec2_client):
     print(f"{Fore.GREEN}Enumerating EBS Volumes...{Style.RESET_ALL}")
     try:

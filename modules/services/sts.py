@@ -1,5 +1,8 @@
 from colorama import Fore, Style
 
+def sts_init_enum(sts_client):
+    whoami(sts_client)
+
 def whoami(sts_client):
     print(f"{Fore.GREEN}Getting caller identity...{Style.RESET_ALL}")
     sts_caller_info = sts_client.get_caller_identity()

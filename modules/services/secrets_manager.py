@@ -2,6 +2,9 @@ import json
 from colorama import Fore, Style
 from modules.utils import custom_serializer
 
+def sm_init_enum(secrets_client):
+    enumerate_secrets_manager(secrets_client)
+
 def enumerate_secrets_manager(secrets_client):
     print(f"{Fore.GREEN}Enumerating Secrets...{Style.RESET_ALL}")
     try:
