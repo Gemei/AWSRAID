@@ -1,17 +1,22 @@
 import json, sys, os
 from colorama import Fore
 
-
 def load_config(file_path):
     if not os.path.exists(file_path):
         print(f"{Fore.RED}Config file '{file_path}' not found.")
         print(f"{Fore.YELLOW}Creating a template. Please fill in the values and rerun the script.")
         default_config = {
-            "access_key": "YOUR_ACCESS_KEY",
-            "secret_access_key": "YOUR_SECRET_ACCESS_KEY",
-            "session_token": "OPTIONAL",
-            "region": "DEFAULT_REGION",
-            "buckets": ["OPTIONAL S3 BUCKETS. DELETE IF NOT REQUIRED"]
+            "victim_access_key": "",
+            "victim_secret_access_key": "",
+            "victim_session_token": "",
+            "victim_region": "",
+            "victim_buckets": [],
+            "victim_aws_account_ID": "",
+            "attacker_access_key": "",
+            "attacker_secret_access_key": "",
+            "attacker_region": "",
+            "attacker_IAM_role_name": "",
+            "attacker_S3_role_arn": ""
         }
         with open(file_path, "w") as f:
             json.dump(default_config, f, indent=4)
