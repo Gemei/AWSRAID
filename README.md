@@ -45,6 +45,10 @@ Run the enumerator:
 python3 aws_enumerator.py
 ```
 
-## Notes
+## To-Do
 
-- More services and checks are planned for the future.
+- Add support for attackers to supply their own AWS account credentials, enabling the following black-box capabilities:
+  - Search for public EBS snapshots using victim account IDs  
+  - Enumerate and brute-force account IDs for services like S3 and exposed AWS access key IDs  
+  - Brute-force IAM usernames and roles (similar to `iam__enum_users` and `iam__enum_roles` modules in PACU)
+- Expand coverage by adding more AWS services and security checks!
