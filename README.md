@@ -47,7 +47,7 @@ pip install -r requirements.txt
 }
 ```
 
-4. Create S3 Role on your AWS account as outlined in S3_Role.md
+4. Create S3 Role on your AWS account as outlined in [S3_Role.md](https://github.com/Gemei/AWS_Enumerator/blob/main/S3_Role.md)
 
 ## Usage
 
