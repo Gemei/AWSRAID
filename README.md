@@ -8,12 +8,13 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 - Enumerates customer-managed IAM roles and policies
 - Lists EC2 instances
 - Lists EBS volumes and snapshots
-- Lists EBS public snapshots using victim's AWS account ID 
+- Lists EBS public snapshots using victim's AWS account ID
 - Identifies RDS databases
 - Lists Cognito user pools
 - Lists SSM parameters, Macie findings, and Secrets Manager secrets
 - Lists Lambda functions and invokes them to inspect responses
 - Lists S3 buckets, checks for public access, and downloads bucket contents
+- Brute-force AWS account ID if a public S3 bucket was found or provided.
 - Lists Elastic Beanstalk applications
 - Lists CodeCommit repositories and enumerates branches for each repository
 
@@ -46,6 +47,8 @@ pip install -r requirements.txt
 }
 ```
 
+4. Create S3 Role on your AWS account as outlined in S3_Role.md
+
 ## Usage
 
 Run the enumerator:
@@ -57,6 +60,6 @@ python3 aws_enumerator.py
 ## To-Do
 
 - Add support for attackers to supply their own AWS account credentials, enabling the following black-box capabilities:
-  - Enumerate and brute-force account IDs for services like S3 and exposed AWS access key IDs  
+  - Enumerate AWS account IDs for exposed AWS access key IDs  
   - Brute-force IAM usernames and roles (similar to `iam__enum_users` and `iam__enum_roles` modules in PACU)
 - Expand coverage by adding more AWS services and security checks!

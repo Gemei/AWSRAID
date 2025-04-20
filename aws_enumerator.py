@@ -1,5 +1,5 @@
 import sys
-
+import modules.globals as my_globals
 from colorama import Fore, init
 from modules.config_loader import load_config
 from modules.aws_clients import initialize_aws_victim_clients, initialize_aws_attacker_clients
@@ -21,43 +21,46 @@ from modules.utils import validate_config
 
 init(autoreset=True)
 
-CONFIG_FILE = "enum_config.json"
-config = load_config(CONFIG_FILE)
+my_globals.config = load_config(my_globals.CONFIG_FILE)
 
-victim_access_key = config.get("victim_access_key") or None
-victim_secret_access_key = config.get("victim_secret_access_key") or None
-victim_session_token = config.get("victim_session_token") or None
-victim_region = config.get("victim_region", "us-east-1")
-victim_buckets = config.get("victim_buckets") or None
-victim_aws_account_ID = config.get("victim_aws_account_ID") or None
+my_globals.victim_access_key = my_globals.config.get("victim_access_key") or None
+my_globals.victim_secret_access_key = my_globals.config.get("victim_secret_access_key") or None
+my_globals.victim_session_token = my_globals.config.get("victim_session_token") or None
+my_globals.victim_region = my_globals.config.get("victim_region", "us-east-1")
+my_globals.victim_buckets = my_globals.config.get("victim_buckets") or None
+my_globals.victim_aws_account_ID = my_globals.config.get("victim_aws_account_ID") or None
 
-attacker_access_key = config.get("attacker_access_key") or None
-attacker_secret_access_key = config.get("attacker_secret_access_key") or None
-attacker_region = config.get("attacker_region", "us-east-1")
-attacker_IAM_role = config.get("attacker_IAM_role_name") or None
-attacker_S3_role = config.get("attacker_S3_role_arn") or None
+my_globals.attacker_access_key = my_globals.config.get("attacker_access_key") or None
+my_globals.attacker_secret_access_key = my_globals.config.get("attacker_secret_access_key") or None
+my_globals.attacker_region = my_globals.config.get("attacker_region", "us-east-1")
+my_globals.attacker_IAM_role_name = my_globals.config.get("attacker_IAM_role_name") or None
+my_globals.attacker_S3_role_arn = my_globals.config.get("attacker_S3_role_arn") or None
 
 def main():
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
-    validate_config(config)
+    validate_config(my_globals.config)
 
-    victim_session, victim_clients = initialize_aws_victim_clients(victim_access_key, victim_secret_access_key, victim_session_token, victim_region)
-    attacker_session, attacker_clients = initialize_aws_attacker_clients(attacker_access_key, attacker_secret_access_key, attacker_region)
+    victim_session, victim_clients = initialize_aws_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token, my_globals.victim_region)
+    attacker_session, attacker_clients = initialize_aws_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
 
-    sts_init_enum(victim_clients["sts_client"])
-    iam_init_enum(victim_clients["iam_client"], victim_clients["sts_client"])
-    ec2_init_enum(victim_clients["ec2_client"])
-    ebs_init_enum(victim_clients["ec2_client"], victim_clients["sts_client"], attacker_clients["attacker_ec2_client"], victim_aws_account_ID)
-    rds_init_enum(victim_clients["rds_client"])
-    cognito_init_enum(victim_clients["cognito_client"])
-    macie_init_enum(victim_clients["macie_client"])
-    ssm_init_enum(victim_clients["ssm_client"])
-    eb_init_enum(victim_clients["elasticbeanstalk_client"])
-    secrets_manager_init_enum(victim_clients["secrets_client"])
-    lambda_init_enum(victim_clients["lambda_client"])
-    sqs_init_enum(victim_clients["sqs_client"])
-    s3_init_enum(victim_clients["s3_client"], victim_clients["unsigned_s3_client"], victim_buckets)
-    code_commit_init_enum(victim_clients["codecommit_client"])
+    if victim_clients is not None:
+        sts_init_enum(victim_clients["sts_client"])
+        iam_init_enum(victim_clients["iam_client"], victim_clients["sts_client"])
+        ec2_init_enum(victim_clients["ec2_client"])
+        ebs_init_enum(victim_clients["ec2_client"], victim_clients["sts_client"], attacker_clients["attacker_ec2_client"], my_globals.victim_aws_account_ID)
+        rds_init_enum(victim_clients["rds_client"])
+        cognito_init_enum(victim_clients["cognito_client"])
+        macie_init_enum(victim_clients["macie_client"])
+        ssm_init_enum(victim_clients["ssm_client"])
+        eb_init_enum(victim_clients["elasticbeanstalk_client"])
+        secrets_manager_init_enum(victim_clients["secrets_client"])
+        lambda_init_enum(victim_clients["lambda_client"])
+        sqs_init_enum(victim_clients["sqs_client"])
+        s3_init_enum(victim_clients["s3_client"], victim_clients["unsigned_s3_client"], attacker_session, my_globals.victim_buckets)
+        code_commit_init_enum(victim_clients["codecommit_client"])
+    elif attacker_clients is not None:
+        ebs_init_enum(None, None, attacker_clients["attacker_ec2_client"], my_globals.victim_aws_account_ID)
+        s3_init_enum(None, attacker_clients["unsigned_s3_client"], attacker_session, my_globals.victim_buckets)
 
 if __name__ == "__main__":
     try:

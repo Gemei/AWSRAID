@@ -1,3 +1,4 @@
 aws_enumerator_OLD.py
 enum_config.json
 .idea/
+.venv/

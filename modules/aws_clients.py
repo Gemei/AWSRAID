@@ -1,7 +1,6 @@
 import boto3
 from botocore import UNSIGNED
 from botocore.client import Config
-from colorama import Fore
 
 def initialize_aws_victim_clients(victim_access_key, victim_secret_access_key, victim_session_token, victim_region):
     if victim_access_key is not None and victim_secret_access_key is not None:
@@ -38,7 +37,9 @@ def initialize_aws_attacker_clients(attacker_access_key, attacker_secret_access_
         )
         attacker_clients = {
             "attacker_ec2_client": attacker_session.client("ec2", attacker_region),
-            "attacker_iam_client": attacker_session.client("iam")
+            "attacker_iam_client": attacker_session.client("iam"),
+            "unsigned_s3_client": boto3.client("s3", config=Config(signature_version=UNSIGNED)),
+            "attacker_s3_client": attacker_session.client("s3")
         }
         return attacker_session, attacker_clients
     return None, None
