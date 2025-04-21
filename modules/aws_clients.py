@@ -36,10 +36,11 @@ def initialize_aws_attacker_clients(attacker_access_key, attacker_secret_access_
             aws_secret_access_key=attacker_secret_access_key
         )
         attacker_clients = {
-            "attacker_ec2_client": attacker_session.client("ec2", attacker_region),
-            "attacker_iam_client": attacker_session.client("iam"),
+            "sts_client": attacker_session.client("sts"),
+            "ec2_client": attacker_session.client("ec2", attacker_region),
+            "iam_client": attacker_session.client("iam"),
             "unsigned_s3_client": boto3.client("s3", config=Config(signature_version=UNSIGNED)),
-            "attacker_s3_client": attacker_session.client("s3")
+            "s3_client": attacker_session.client("s3")
         }
         return attacker_session, attacker_clients
     return None, None

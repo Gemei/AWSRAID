@@ -142,10 +142,10 @@ def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
         for i in range(10):
             test = f"{digits}{i}"
             policy = get_policy(test)
+            sys.stdout.write(f"\r{Fore.CYAN}Brute-forcing.... {digits}{i}")
+            sys.stdout.flush()
             if can_access_with_policy(attacker_session, bucket, key, s3_role_arn, policy):
                 digits = test
-                sys.stdout.write(f"\r{Fore.CYAN}[Brute-forcing.... {digits}]")
-                sys.stdout.flush()
                 break
     if len(digits) == 12:
         print(f"\n{Fore.MAGENTA}Successfully brute-forced AWS Account ID: {digits}")

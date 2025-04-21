@@ -7,6 +7,7 @@ victim_session_token = ""
 victim_region = ""
 victim_buckets = ""
 victim_aws_account_ID = ""
+victim_aws_username = ""
 
 attacker_access_key = ""
 attacker_secret_access_key = ""

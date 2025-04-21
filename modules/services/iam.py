@@ -1,20 +1,13 @@
 import json
+import modules.globals as my_globals
 from colorama import Fore
 from modules.utils import custom_serializer
 
 
-def iam_init_enum(iam_client, sts_client):
-    try:
-        sts_info = sts_client.get_caller_identity()
-
-        user_name = sts_info["Arn"].split("/")[-1]
-        aws_id = sts_info["Account"]
-        
-        list_iam_policies(iam_client, aws_id)
-        list_iam_roles(iam_client, aws_id)
-        list_current_user_policies(iam_client, user_name)
-    except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to call sts to get current user and AWS account ID.")
+def iam_init_enum(iam_client):
+    list_iam_policies(iam_client, my_globals.victim_aws_account_ID)
+    list_iam_roles(iam_client, my_globals.victim_aws_account_ID)
+    list_current_user_policies(iam_client, my_globals.victim_aws_username)
 
 
 def list_iam_policies(iam_client, aws_id):

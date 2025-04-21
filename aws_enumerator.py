@@ -44,10 +44,10 @@ def main():
     attacker_session, attacker_clients = initialize_aws_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
 
     if victim_clients is not None:
-        sts_init_enum(victim_clients["sts_client"])
-        iam_init_enum(victim_clients["iam_client"], victim_clients["sts_client"])
+        sts_init_enum(victim_clients["sts_client"], attacker_clients["sts_client"])
+        iam_init_enum(victim_clients["iam_client"])
         ec2_init_enum(victim_clients["ec2_client"])
-        ebs_init_enum(victim_clients["ec2_client"], victim_clients["sts_client"], attacker_clients["attacker_ec2_client"], my_globals.victim_aws_account_ID)
+        ebs_init_enum(victim_clients["ec2_client"], victim_clients["sts_client"], attacker_clients["ec2_client"], my_globals.victim_aws_account_ID)
         rds_init_enum(victim_clients["rds_client"])
         cognito_init_enum(victim_clients["cognito_client"])
         macie_init_enum(victim_clients["macie_client"])
@@ -59,7 +59,8 @@ def main():
         s3_init_enum(victim_clients["s3_client"], victim_clients["unsigned_s3_client"], attacker_session, my_globals.victim_buckets)
         code_commit_init_enum(victim_clients["codecommit_client"])
     elif attacker_clients is not None:
-        ebs_init_enum(None, None, attacker_clients["attacker_ec2_client"], my_globals.victim_aws_account_ID)
+        sts_init_enum(None, attacker_clients["sts_client"])
+        ebs_init_enum(None, None, attacker_clients["ec2_client"], my_globals.victim_aws_account_ID)
         s3_init_enum(None, attacker_clients["unsigned_s3_client"], attacker_session, my_globals.victim_buckets)
 
 if __name__ == "__main__":
