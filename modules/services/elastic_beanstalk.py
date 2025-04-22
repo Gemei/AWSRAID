@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def eb_init_enum(elasticbeanstalk_client):
-    list_elastic_beanstalk(elasticbeanstalk_client)
+def elastic_beanstalk_init_enum(victim_elastic_beanstalk_client, attack_elastic_beanstalk_client):
+    list_elastic_beanstalk(victim_elastic_beanstalk_client)
 
 def list_elastic_beanstalk(elasticbeanstalk_client):
     print(f"{Fore.GREEN}Enumerating Elastic Beanstalk Applications...")

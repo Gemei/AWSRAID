@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def macie_init_enum(macie_client):
-    list_macie_findings(macie_client)
+def macie_init_enum(victim_macie_client, attacker_macie_client):
+    list_macie_findings(victim_macie_client)
 
 def list_macie_findings(macie_client):
     print(f"{Fore.GREEN}Enumerating Macie Findings...")

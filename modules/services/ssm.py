@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def ssm_init_enum(ssm_client):
-    list_ssm_parameters(ssm_client)
+def ssm_init_enum(victim_ssm_client, attacker_ssm_client):
+    list_ssm_parameters(victim_ssm_client)
 
 def list_ssm_parameters(ssm_client):
     print(f"{Fore.GREEN}Enumerating SSM Parameters...")

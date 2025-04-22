@@ -3,8 +3,8 @@ import json
 from modules.utils import custom_serializer
 
 
-def lambda_init_enum(lambda_client):
-    list_lambda_functions(lambda_client)
+def lambda_init_enum(victim_lambda_client, attacker_lambda_client):
+    list_lambda_functions(victim_lambda_client)
 
 def list_lambda_functions(lambda_client):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...")

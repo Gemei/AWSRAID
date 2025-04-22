@@ -20,7 +20,9 @@ def get_victim_user(sts_client):
 
 def get_victim_aws_account_id(sts_client):
     try:
-        if my_globals.victim_aws_account_ID is None and my_globals.victim_access_key is not None:
+        if my_globals.victim_aws_account_ID is not None:
+            return # AWS account ID was already found or provided by the user
+        if my_globals.victim_access_key is not None:
             sts_caller_info = sts_client.get_access_key_info(AccessKeyId=my_globals.victim_access_key)
             my_globals.victim_aws_account_ID = sts_caller_info['Account']
             print(f"{Fore.CYAN}Victim's AWS Account ID: {my_globals.victim_aws_account_ID}")

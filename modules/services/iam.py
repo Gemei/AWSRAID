@@ -4,11 +4,10 @@ from colorama import Fore
 from modules.utils import custom_serializer
 
 
-def iam_init_enum(iam_client):
-    list_iam_policies(iam_client, my_globals.victim_aws_account_ID)
-    list_iam_roles(iam_client, my_globals.victim_aws_account_ID)
-    list_current_user_policies(iam_client, my_globals.victim_aws_username)
-
+def iam_init_enum(victim_iam_client, attacker_client):
+    list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
+    list_iam_roles(victim_iam_client, my_globals.victim_aws_account_ID)
+    list_current_user_policies(victim_iam_client, my_globals.victim_aws_username)
 
 def list_iam_policies(iam_client, aws_id):
     print(f"{Fore.GREEN}Listing IAM Policies...")

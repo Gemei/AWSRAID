@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def rds_init_enum(rds_client):
-    list_rds_instances(rds_client)
+def rds_init_enum(victim_rds_client, attacker_rds_client):
+    list_rds_instances(victim_rds_client)
 
 def list_rds_instances(rds_client):
     print(f"{Fore.GREEN}Enumerating RDS Instances...")

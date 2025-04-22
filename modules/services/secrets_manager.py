@@ -3,8 +3,8 @@ from colorama import Fore
 from modules.utils import custom_serializer
 
 
-def secrets_manager_init_enum(secrets_client):
-    list_secrets_manager(secrets_client)
+def secrets_manager_init_enum(victim_secrets_client, attacker_secrets_client):
+    list_secrets_manager(victim_secrets_client)
 
 def list_secrets_manager(secrets_client):
     print(f"{Fore.GREEN}Enumerating Secrets Manager...")

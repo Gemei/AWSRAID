@@ -1,12 +1,12 @@
 import modules.globals as my_globals
 from colorama import Fore
 
-def ebs_init_enum(ec2_client, sts_client, attacker_ec2_client, aws_account_id):
-    if ec2_client and sts_client:
-        list_ebs_volumes(ec2_client)
-        list_ebs_snapshots(ec2_client, sts_client)
+def ebs_init_enum(victim_ec2_client, victim_sts_client, attacker_ec2_client):
+    if victim_ec2_client and victim_sts_client:
+        list_ebs_volumes(victim_ec2_client)
+        list_ebs_snapshots(victim_ec2_client, victim_sts_client)
     if attacker_ec2_client and my_globals.victim_aws_account_ID:
-        list_ebs_public_snapshots(attacker_ec2_client, aws_account_id)
+        list_ebs_public_snapshots(attacker_ec2_client, my_globals.victim_aws_account_ID)
 
 def list_ebs_volumes(ec2_client):
     print(f"{Fore.GREEN}Enumerating EBS Volumes...")

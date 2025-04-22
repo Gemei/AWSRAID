@@ -3,8 +3,8 @@ from colorama import Fore
 from modules.utils import custom_serializer
 
 
-def code_commit_init_enum(code_commit_client):
-    list_repos(code_commit_client)
+def code_commit_init_enum(victim_code_commit_client, attacker_code_commit_client):
+    list_repos(victim_code_commit_client)
 
 def list_repos(code_commit_client):
     print(f"{Fore.GREEN}Enumerating Code Commit...")

@@ -1,5 +1,4 @@
 CONFIG_FILE = "enum_config.json"
-config = ""
 
 victim_access_key = ""
 victim_secret_access_key = ""
@@ -14,3 +13,5 @@ attacker_secret_access_key = ""
 attacker_region = ""
 attacker_IAM_role_name = ""
 attacker_S3_role_arn = ""
+
+unsigned_s3_client = ""

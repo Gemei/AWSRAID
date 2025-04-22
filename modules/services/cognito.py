@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def cognito_init_enum(cognito_client):
-    list_cognito_users(cognito_client)
+def cognito_init_enum(victim_cognito_client, attacker_cognito_client):
+    list_cognito_users(victim_cognito_client)
 
 def list_cognito_users(cognito_client):
     print(f"{Fore.GREEN}Enumerating Cognito User Pools...")

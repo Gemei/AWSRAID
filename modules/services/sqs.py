@@ -3,8 +3,8 @@ from colorama import Fore
 from modules.utils import custom_serializer
 
 
-def sqs_init_enum(sqs_client):
-    list_sqs_queues(sqs_client)
+def sqs_init_enum(victim_sqs_client, attacker_sqs_client):
+    list_sqs_queues(victim_sqs_client)
 
 def list_sqs_queues(sqs_client):
     print(f"{Fore.GREEN}Enumerating SQS Queues...")

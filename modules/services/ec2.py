@@ -1,8 +1,8 @@
 from colorama import Fore
 
 
-def ec2_init_enum(ec2_client):
-    enumerate_ec2(ec2_client)
+def ec2_init_enum(victim_ec2_client, attacker_ec2_client):
+    enumerate_ec2(victim_ec2_client)
 
 def enumerate_ec2(ec2_client):
     print(f"{Fore.GREEN}Enumerating EC2 Instances...")
