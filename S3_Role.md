@@ -54,4 +54,5 @@ Go to Roles in IAM and create a trust policy called `s3enum_role` and attached i
 }
 ```
 
-![image](https://github.com/user-attachments/assets/de936820-9269-4b0c-b106-a3681bde69b9)
+![435479986-de936820-9269-4b0c-b106-a3681bde69b9](https://github.com/user-attachments/assets/0e5af033-0f4b-4978-ba75-bbf84ed5c315)
+
