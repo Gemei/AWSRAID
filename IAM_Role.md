@@ -16,3 +16,4 @@ Note the principal must exist in this AWS account context.
 }
 ```
 
+<img width="926" alt="image" src="https://github.com/user-attachments/assets/d7ecdd82-8096-473e-b4e2-f6b3acc9dd3f" />
