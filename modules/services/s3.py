@@ -107,7 +107,8 @@ def download_bucket_objects(s3_client, buckets):
             total_files = len(contents)
             for i, bucket_contents in enumerate(contents, start=1):
                 file_name = str(bucket_contents["Key"])
-                sys.stdout.write(f"\r{Fore.MAGENTA}[{i}/{total_files}] Downloading {file_name}")
+                sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
+                sys.stdout.write(f"{Fore.MAGENTA}[{i}/{total_files}] Downloading {file_name}")
                 sys.stdout.flush()
                 try:
                     with open(file_name, "wb") as file:

@@ -1,4 +1,7 @@
 CONFIG_FILE = "enum_config.json"
+user_name_wordlist = "wordlists/pacu_usernames-word-list.txt"
+
+start_username_brute_force = False
 
 victim_access_key = ""
 victim_secret_access_key = ""

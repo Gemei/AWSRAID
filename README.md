@@ -6,6 +6,7 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 ## Features
 
 - Enumerates customer-managed IAM roles and policies
+- Brute-force usernames for a given AWS account ID
 - Lists EC2 instances
 - Lists EBS volumes and snapshots
 - Lists EBS public snapshots using victim's AWS account ID
@@ -15,9 +16,9 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 - Lists Lambda functions and invokes them to inspect responses
 - Lists S3 buckets, checks for public access, and downloads bucket contents
 - Brute-force AWS account ID if a public S3 bucket was found or provided
+- Get AWS account ID from an access key
 - Lists Elastic Beanstalk applications
 - Lists CodeCommit repositories and enumerates branches for each repository
-- Get AWS account ID from an access key
 
 ## Setup
 
@@ -44,7 +45,9 @@ pip install -r requirements.txt
 	"attacker_secret_access_key": "k6UqaX*********",
 	"attacker_region": "us-east-1",
 	"attacker_IAM_role_name": "IAM*****",
-	"attacker_S3_role_arn": "arn:aws:iam::36*******:role/s3enum******"
+	"attacker_S3_role_arn": "arn:aws:iam::36*******:role/s3enum******",
+    "user_name_wordlist": "./wordlists/pacu_usernames_word_list.txt",
+    "start_username_brute_force": false
 }
 ```
 
@@ -61,5 +64,5 @@ python3 aws_enumerator.py
 ## To-Do
 
 - Add support for attackers to supply their own AWS account credentials, enabling the following black-box capabilities:
-  - Brute-force IAM usernames and roles (similar to `iam__enum_users` and `iam__enum_roles` modules in PACU)
+  - Brute-force IAM roles (similar to `iam__enum_roles` module in PACU)
 - Expand coverage by adding more AWS services and security checks!
