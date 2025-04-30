@@ -46,8 +46,8 @@ pip install -r requirements.txt
 	"attacker_region": "us-east-1",
 	"attacker_IAM_role_name": "IAM*****",
 	"attacker_S3_role_arn": "arn:aws:iam::36*******:role/s3enum******",
-    "user_name_wordlist": "./wordlists/pacu_usernames_word_list.txt",
-    "start_username_brute_force": false
+	"user_name_wordlist": "./wordlists/pacu_usernames_word_list.txt",
+	"start_username_brute_force": false
 }
 ```
 
