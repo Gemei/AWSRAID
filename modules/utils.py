@@ -10,8 +10,11 @@ def custom_serializer(obj):
 
 def validate_config(config):
     my_globals.start_username_brute_force = config.get("start_username_brute_force") or False
+    my_globals.start_role_name_brute_force = config.get("start_role_name_brute_force") or False
     my_globals.user_name_wordlist = config.get("user_name_wordlist") or "./wordlists/pacu_usernames_word_list.txt"
     my_globals.user_name_wordlist = os.path.abspath(my_globals.user_name_wordlist)
+    my_globals.role_name_wordlist = config.get("role_name_wordlist") or "./wordlists/pacu_role_names_word_list.txt"
+    my_globals.role_name_wordlist = os.path.abspath(my_globals.user_name_wordlist)
 
     my_globals.victim_access_key = config.get("victim_access_key") or None
     my_globals.victim_secret_access_key = config.get("victim_secret_access_key") or None
