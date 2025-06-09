@@ -54,7 +54,7 @@ def list_iam_groups_for_current_user(iam_client, user_name):
         for group in groups:
             print(f"{Fore.MAGENTA}User: {group['GroupName']} | ARN: {group['Arn']}")
     except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Groups For Current User\n{e}")
+        print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Groups For Current User")
 
 ########################## All Customer Managed Policies ##########################
 
