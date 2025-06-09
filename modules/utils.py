@@ -14,12 +14,11 @@ def validate_config(config):
     my_globals.user_name_wordlist = config.get("user_name_wordlist") or "./wordlists/pacu_usernames_word_list.txt"
     my_globals.user_name_wordlist = os.path.abspath(my_globals.user_name_wordlist)
     my_globals.role_name_wordlist = config.get("role_name_wordlist") or "./wordlists/pacu_role_names_word_list.txt"
-    my_globals.role_name_wordlist = os.path.abspath(my_globals.user_name_wordlist)
+    my_globals.role_name_wordlist = os.path.abspath(my_globals.role_name_wordlist)
 
     my_globals.victim_access_key = config.get("victim_access_key") or None
     my_globals.victim_secret_access_key = config.get("victim_secret_access_key") or None
     my_globals.victim_session_token = config.get("victim_session_token") or None
-    my_globals.victim_region = config.get("victim_region", "us-east-1")
     my_globals.victim_buckets = config.get("victim_buckets") or None
     my_globals.victim_aws_account_ID = config.get("victim_aws_account_ID") or None
 
@@ -50,10 +49,13 @@ def validate_config(config):
         warnings.append("[*] Victim secret access key missing. Only basic account-level information can be retrieved.")
 
     if not my_globals.victim_aws_account_ID:
-        warnings.append("[*] Victim AWS account ID not provided. Public EBS snapshot enumeration might be skipped.")
+        warnings.append("[*] Victim AWS account ID was not provided. Public EBS snapshot enumeration might be skipped if sts call failed.")
 
     if not my_globals.start_username_brute_force:
         warnings.append("[*] Username brute-force set to \"false\" in the \"enum.config.json\" config file.")
+
+    if not my_globals.start_role_name_brute_force:
+        warnings.append("[*] Role name brute-force set to \"false\" in the \"enum.config.json\" config file.")
 
     if all(not x for x in [my_globals.attacker_access_key, my_globals.attacker_secret_access_key,
                            my_globals.victim_secret_access_key, my_globals.victim_access_key]):

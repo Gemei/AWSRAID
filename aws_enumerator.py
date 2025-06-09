@@ -5,7 +5,6 @@ from modules.aws_clients import *
 from modules.services.sts import sts_init_enum
 from modules.services.iam import iam_init_enum
 from modules.services.ec2 import ec2_init_enum
-from modules.services.ebs import ebs_init_enum
 from modules.services.rds import rds_init_enum
 from modules.services.cognito import cognito_init_enum
 from modules.services.macie import macie_init_enum
@@ -20,53 +19,57 @@ from modules.utils import validate_config
 
 init(autoreset=True)
 
+SERVICE_MAP = {
+    sts_init_enum: "sts",
+    iam_init_enum: "iam",
+    ec2_init_enum: "ec2",
+    rds_init_enum: "rds",
+    cognito_init_enum: "cognito-idp",
+    macie_init_enum: "macie2",
+    ssm_init_enum: "ssm",
+    elastic_beanstalk_init_enum: "elasticbeanstalk",
+    secrets_manager_init_enum: "secretsmanager",
+    lambda_init_enum: "lambda",
+    sqs_init_enum: "sqs",
+    s3_init_enum: "s3",
+    code_commit_init_enum: "codecommit",
+}
+
 config = load_config(my_globals.CONFIG_FILE)
 
 def main():
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
     validate_config(config)
 
-    victim_session, victim_clients = initialize_aws_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token, my_globals.victim_region)
-    attacker_session, attacker_clients = initialize_aws_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
+    victim_session, victim_clients = initialize_aws_regionless_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token)
+    attacker_session, attacker_clients = initialize_aws_regionless_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
+
+    # For public access buckets
     initialize_aws_unsigned_s3_client()
 
-    functions = [
-        sts_init_enum,
-        iam_init_enum,
+    region_functions = [
+        secrets_manager_init_enum,
         ec2_init_enum,
-        ebs_init_enum,
+        lambda_init_enum,
         rds_init_enum,
         cognito_init_enum,
         macie_init_enum,
         ssm_init_enum,
         elastic_beanstalk_init_enum,
-        secrets_manager_init_enum,
-        lambda_init_enum,
         sqs_init_enum,
-        s3_init_enum,
         code_commit_init_enum,
     ]
 
-    for function in functions:
-        client_name = function.__name__.replace("_init_enum", "_client")
+    regionless_functions = [sts_init_enum, iam_init_enum, s3_init_enum]
 
-        victim_client = victim_clients.get(client_name) if victim_clients else None
-        attacker_client = attacker_clients.get(client_name) if attacker_clients else None
+    for function in regionless_functions:
+        service = SERVICE_MAP[function]
+        function(victim_clients.get(service), attacker_clients.get(service))
 
-        if function is ebs_init_enum:
-            ebs_init_enum(
-                victim_clients.get("ec2_client") if victim_clients else None,
-                victim_clients.get("sts_client") if victim_clients else None,
-                attacker_clients.get("ec2_client") if attacker_clients else None,
-            )
-        elif function is s3_init_enum:
-            s3_init_enum(
-                victim_clients.get("s3_client") if victim_clients else None,
-                attacker_session if attacker_clients else None,
-            )
-        else:
-            function(victim_client, attacker_client)
 
+    for function in region_functions:
+        service = SERVICE_MAP[function]
+        function(victim_session, attacker_session)
 
 if __name__ == "__main__":
     try:

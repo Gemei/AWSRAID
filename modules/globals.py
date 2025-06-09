@@ -8,7 +8,6 @@ start_role_name_brute_force = False
 victim_access_key = ""
 victim_secret_access_key = ""
 victim_session_token = ""
-victim_region = ""
 victim_buckets = ""
 victim_aws_account_ID = ""
 victim_aws_username = ""

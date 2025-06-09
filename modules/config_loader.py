@@ -9,7 +9,6 @@ def load_config(file_path):
             "victim_access_key": "",
             "victim_secret_access_key": "",
             "victim_session_token": "",
-            "victim_region": "",
             "victim_buckets": [],
             "victim_aws_account_ID": "",
             "attacker_access_key": "",
