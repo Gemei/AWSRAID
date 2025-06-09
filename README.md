@@ -44,6 +44,7 @@ pip install -r requirements.txt
 	"victim_session_token": "",
 	"victim_buckets": ["mega-big-tech"],
 	"victim_aws_account_ID": "78501******",
+    "victim_regions": ["us-east-1","us-east-2"],
 	"attacker_access_key": "AKIAVIE**********",
 	"attacker_secret_access_key": "k6UqaX*********",
 	"attacker_region": "us-east-1",
@@ -70,5 +71,4 @@ python3 aws_enumerator.py
 ## To-Do
 - Expand coverage by adding more AWS services and security checks!
 - Add the option to specify an output file.
-- Add the option to limit scan to specific regions
 - Add multi-threading

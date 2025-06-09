@@ -28,6 +28,11 @@ def validate_config(config):
     my_globals.attacker_IAM_role_name = config.get("attacker_IAM_role_name") or None
     my_globals.attacker_S3_role_arn = config.get("attacker_S3_role_arn") or None
 
+    # Limit regions to only selected regions
+    my_globals.victim_regions = config.get("victim_regions") or None
+    if my_globals.victim_regions:
+        my_globals.aws_regions = my_globals.victim_regions
+
     warnings = []
     errors = []
 

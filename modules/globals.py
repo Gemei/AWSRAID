@@ -13,6 +13,7 @@ victim_aws_account_ID = ""
 victim_aws_username = ""
 victim_groups = ""
 victim_roles = ""
+victim_regions = []
 
 attacker_access_key = ""
 attacker_secret_access_key = ""
