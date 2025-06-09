@@ -110,6 +110,8 @@ def download_bucket_objects(s3_client, buckets):
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
                 sys.stdout.write(f"{Fore.MAGENTA}[{i}/{total_files}] Downloading {file_name}")
                 sys.stdout.flush()
+                if(i == total_files):
+                    print("\n") # Add a new line in the terminal after download has completed.
                 try:
                     with open(file_name, "wb") as file:
                         s3_client.download_fileobj(bucket, file_name, file)

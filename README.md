@@ -6,6 +6,9 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 ## Features
 
 - Lists customer-managed IAM roles and policies
+- List users and groups
+- List inline and attached user and group policies
+- List attached role policies
 - Brute-force usernames for a given AWS account ID
 - Brute-force role names for a given AWS account ID
 - Lists EC2 instances
@@ -67,3 +70,4 @@ python3 aws_enumerator.py
 
 ## To-Do
 - Expand coverage by adding more AWS services and security checks!
+- Add the option to specify an output file.

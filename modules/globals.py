@@ -12,6 +12,8 @@ victim_region = ""
 victim_buckets = ""
 victim_aws_account_ID = ""
 victim_aws_username = ""
+victim_groups = ""
+victim_roles = ""
 
 attacker_access_key = ""
 attacker_secret_access_key = ""
