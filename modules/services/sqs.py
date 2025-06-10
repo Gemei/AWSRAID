@@ -25,8 +25,12 @@ def list_sqs_queues(victim_session):
                     )
                     messages = response.get("Messages", [])
                     print(f"{Fore.YELLOW}Messages:\n{json.dumps(messages, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to receive messages from {queue_url}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list SQS queues in region {region}")

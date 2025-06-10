@@ -3,6 +3,17 @@ import modules.globals as my_globals
 from datetime import datetime
 from colorama import Fore
 
+def print_banner():
+    print(r"""        
+     █████╗ ██╗    ██╗███████╗██████╗  █████╗ ██╗██████╗     
+    ██╔══██╗██║    ██║██╔════╝██╔══██╗██╔══██╗██║██╔══██╗    
+    ███████║██║ █╗ ██║███████╗██████╔╝███████║██║██║  ██║    
+    ██╔══██║██║███╗██║╚════██║██╔══██╗██╔══██║██║██║  ██║    
+    ██║  ██║╚███╔███╔╝███████║██║  ██║██║  ██║██║██████╔╝    
+    ╚═╝  ╚═╝ ╚══╝╚══╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝     
+                     AWS Recon Tool
+    """)
+
 def custom_serializer(obj):
     if isinstance(obj, datetime):
         return obj.isoformat()

@@ -19,8 +19,12 @@ def list_elastic_beanstalk(victim_session):
                 try:
                     envs = eb_client.describe_environments(ApplicationName=app['ApplicationName']).get("Environments", [])
                     print(f"{Fore.YELLOW}Environments:\n{json.dumps(envs, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to describe environments for application {app['ApplicationName']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Elastic Beanstalk applications in region {region}")

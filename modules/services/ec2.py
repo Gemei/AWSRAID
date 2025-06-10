@@ -20,6 +20,8 @@ def enumerate_ec2(victim_session):
                 for instance in reservation.get("Instances", []):
                     print(f"{Fore.MAGENTA}\nRegion {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
                     describe_ec2_instance(instance)
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EC2 instances in region {region}")
@@ -46,6 +48,8 @@ def describe_ec2_instance(instance):
             print(f"{Fore.YELLOW}  Tags:")
             for tag in tags:
                 print(f"{Fore.YELLOW}    {tag['Key']}: {tag['Value']}")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to describe EC2 instance")
 
@@ -57,6 +61,8 @@ def list_ebs_volumes(victim_session):
             volumes = ec2_client.describe_volumes().get("Volumes", [])
             for volume in volumes:
                 print(f"{Fore.MAGENTA}\nRegion {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
@@ -72,6 +78,8 @@ def list_ebs_snapshots(victim_session):
             if response:
                 for snapshot in response.get('Snapshots', []):
                     print(f"{Fore.MAGENTA}Snapshot ID: {snapshot['SnapshotId']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
@@ -91,6 +99,8 @@ def list_ebs_public_snapshots(attacker_session):
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
                 sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public snapshots found in region {region}")
                 sys.stdout.flush()
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list public EBS snapshots in region {region}")

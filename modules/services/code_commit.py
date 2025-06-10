@@ -18,13 +18,19 @@ def list_code_commit_repos(victim_session):
                 try:
                     repo_details = code_commit_client.get_repository(repositoryName=repo['repositoryName']).get("repositoryMetadata", {})
                     print(f"{Fore.YELLOW}{json.dumps(repo_details, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to get repository metadata for {repo['repositoryName']}")
                 try:
                     branches = code_commit_client.list_branches(repositoryName=repo['repositoryName']).get("branches", [])
                     print(f"{Fore.YELLOW}{repo['repositoryName']} branches:\n{json.dumps(branches, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to list branches for {repo['repositoryName']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list CodeCommit repositories in region {region}")

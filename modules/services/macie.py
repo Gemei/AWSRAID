@@ -17,8 +17,12 @@ def list_macie_findings(victim_session):
                 if findings:
                     details = macie_client.get_findings(findingIds=findings[:5]).get("findings", [])
                     print(f"{Fore.YELLOW}Sample Findings:\n{json.dumps(details, indent=4, sort_keys=True, default=custom_serializer)}")
+            except KeyboardInterrupt:
+                raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to get finding details in region {region}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Macie findings in region {region}")

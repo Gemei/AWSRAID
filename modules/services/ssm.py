@@ -19,6 +19,8 @@ def list_ssm_parameters(victim_session):
                     print(f"{Fore.YELLOW}{json.dumps(value, indent=4, sort_keys=True, default=custom_serializer)}")
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to get value for parameter: {param['Name']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list SSM parameters in region {region}")

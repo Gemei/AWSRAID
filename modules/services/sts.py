@@ -28,5 +28,7 @@ def get_victim_aws_account_id(sts_client):
             print(f"{Fore.CYAN}Victim's AWS Account ID: {my_globals.victim_aws_account_ID}")
         else:
             print(f"{Fore.YELLOW} Victim access key was not provided")
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to retrieve victim AWS account using access key: {my_globals.victim_access_key}\n{e}")

@@ -1,6 +1,8 @@
-# AWS Enumerator
+![banner.png](banner.png)
 
-A modular AWS enumeration script for penetration testing and security auditing.  
+# AWSRAID
+
+A modular AWS enumeration tool for penetration testing and security auditing.  
 This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and more.
 
 ## Features
@@ -65,10 +67,11 @@ pip install -r requirements.txt
 Run the enumerator:
 
 ```bash
-python3 aws_enumerator.py
+python3 awsraid.py
 ```
 
 ## To-Do
 - Expand coverage by adding more AWS services and security checks!
 - Add the option to specify an output file.
 - Add multi-threading
+- Add better situational exception handling

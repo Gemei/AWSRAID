@@ -15,7 +15,7 @@ from modules.services.aws_lambda import lambda_init_enum
 from modules.services.sqs import sqs_init_enum
 from modules.services.s3 import s3_init_enum
 from modules.services.code_commit import code_commit_init_enum
-from modules.utils import validate_config
+from modules.utils import validate_config, print_banner
 
 init(autoreset=True)
 
@@ -38,6 +38,7 @@ SERVICE_MAP = {
 config = load_config(my_globals.CONFIG_FILE)
 
 def main():
+    print_banner()
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
     validate_config(config)
 
@@ -75,5 +76,6 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\nCtrl+C pressed. Exiting.")
+        print(f"{Fore.RED}\n\n[!] Caught Ctrl+C (KeyboardInterrupt)")
+        print(f"{Fore.RED}Exiting...")
         sys.exit(0)

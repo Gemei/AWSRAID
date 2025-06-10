@@ -31,6 +31,8 @@ def list_buckets(s3_client):
             print(f"{Fore.MAGENTA}Found bucket: {bucket['Name']}")
             found_buckets.append(bucket['Name'])
         return found_buckets
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list S3 buckets")
         return []
@@ -55,6 +57,8 @@ def list_public_buckets(unsigned_s3_client, buckets):
                         print(f"{Fore.MAGENTA}- {obj['Key']}")
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No public content or access denied for: {bucket}")
+            except KeyboardInterrupt:
+                raise
             except Exception as e:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to access bucket {bucket} anonymously\n{e}")
     else:
@@ -69,6 +73,8 @@ def get_bucket_policy(s3_client, buckets):
                 response = s3_client.get_bucket_policy(Bucket=bucket)
                 policy = json.loads(response['Policy'])
                 print(f"{Fore.MAGENTA}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
+            except KeyboardInterrupt:
+                raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Can't get bucket policy: {bucket}")
     else:
@@ -77,6 +83,8 @@ def get_bucket_policy(s3_client, buckets):
 def create_bucket_dirs(bucket):
     try:
         os.mkdir(bucket)
+    except KeyboardInterrupt:
+        raise
     except:
         pass
 
@@ -84,6 +92,8 @@ def delete_bucket_dirs(bucket):
     try:
         if os.path.exists(bucket) and os.path.isdir(bucket) and len(os.listdir(bucket)) == 0:
             os.rmdir(bucket)
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to delete directory {bucket}\n{e}")
 
@@ -116,15 +126,13 @@ def download_bucket_objects(s3_client, buckets):
                     with open(file_name, "wb") as file:
                         s3_client.download_fileobj(bucket, file_name, file)
                 except KeyboardInterrupt:
-                    print("\nCtrl+C pressed. Exiting.")
-                    sys.exit(0)
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX} | Failed to download {file_name} from {bucket}")
             os.chdir("..")
             delete_bucket_dirs(bucket)
         except KeyboardInterrupt:
-            print("\nCtrl+C pressed. Exiting.")
-            sys.exit(0)
+            raise
         except:
             sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
             print(f"{Fore.LIGHTBLACK_EX}Can't list bucket: {bucket}")

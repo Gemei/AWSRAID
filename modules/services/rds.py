@@ -16,8 +16,12 @@ def list_rds_instances(victim_session):
                 print(f"{Fore.MAGENTA}\nRegion: {region} | RDS: {db['DBInstanceIdentifier']} | Status: {db['DBInstanceStatus']}")
                 try:
                     print(f"{Fore.YELLOW}{json.dumps(db, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to format RDS instance data for {db['DBInstanceIdentifier']}")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list RDS instances in region {region}")

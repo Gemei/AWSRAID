@@ -31,6 +31,8 @@ def list_iam_users(iam_client, aws_id):
         for user in users:
             if aws_id in user['Arn']:  # Only print users from the specified account
                 print(f"{Fore.MAGENTA}User: {user['UserName']} | ARN: {user['Arn']}")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Users")
 
@@ -44,6 +46,8 @@ def list_iam_groups(iam_client, aws_id):
         for group in groups:
             if aws_id in group['Arn']:  # Only print groups from the specified account
                 print(f"{Fore.MAGENTA}User: {group['GroupName']} | ARN: {group['Arn']}")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Groups")
 
@@ -53,6 +57,8 @@ def list_iam_groups_for_current_user(iam_client, user_name):
         groups = iam_client.list_groups_for_user(UserName=user_name).get("Groups", [])
         for group in groups:
             print(f"{Fore.MAGENTA}User: {group['GroupName']} | ARN: {group['Arn']}")
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Groups For Current User")
 
@@ -66,6 +72,8 @@ def list_iam_policies(iam_client, aws_id):
             if (aws_id in policy['Arn']): # Only print customer managed policies
                 print(f"{Fore.CYAN}Policy: {policy['PolicyName']} | ARN: {policy['Arn']}")
                 describe_iam_policy(iam_client, policy['Arn'])
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM policies")
 
@@ -78,6 +86,8 @@ def list_iam_roles(iam_client, aws_id):
             if (aws_id in role['Arn']):  # Only print customer managed roles
                 print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}")
                 describe_iam_role(iam_client, role['RoleName'])
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM roles")
 
@@ -94,6 +104,8 @@ def list_current_user_policies(iam_client, user_name):
                 describe_iam_policy(iam_client, policy['PolicyArn'])
         else:
             print(f"{Fore.LIGHTBLACK_EX}No inline policies found.")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate user inline policies")
 
@@ -106,6 +118,8 @@ def list_current_user_policies(iam_client, user_name):
                 describe_iam_policy(iam_client, policy['PolicyArn'])
         else:
             print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate user attached policies")
 
@@ -126,6 +140,8 @@ def list_group_policies(iam_client, groups):
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No inline policies found.")
+            except KeyboardInterrupt:
+                raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate inline policies for group: {group_name}")
 
@@ -138,6 +154,8 @@ def list_group_policies(iam_client, groups):
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+            except KeyboardInterrupt:
+                raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate attached policies for group: {group_name}")
 
@@ -158,6 +176,8 @@ def list_role_attached_policies(iam_client, roles):
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+            except KeyboardInterrupt:
+                raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate attached policies for role: {role_name}")
 
@@ -168,6 +188,8 @@ def describe_iam_policy(iam_client, policy_arn):
         version_id = iam_client.get_policy(PolicyArn=policy_arn)["Policy"]["DefaultVersionId"]
         policy_doc = iam_client.get_policy_version(PolicyArn=policy_arn, VersionId=version_id)["PolicyVersion"]["Document"]
         print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to describe policy {policy_arn}")
 
@@ -175,6 +197,8 @@ def describe_iam_role(iam_client, role_name):
     try:
         role_detail = iam_client.get_role(RoleName=role_name)["Role"]
         print(f"{Fore.YELLOW}{json.dumps(role_detail['AssumeRolePolicyDocument'], indent=4, sort_keys=True, default=custom_serializer)}")
+    except KeyboardInterrupt:
+        raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to describe role {role_name}")
 
@@ -224,6 +248,8 @@ def brute_force_usernames(client):
                 users = "\n".join(found_users)
                 sys.stdout.write(f"\033[1A\r\033[K{Fore.MAGENTA}{user_arn}\n")
 
+        except KeyboardInterrupt:
+            raise
         except botocore.exceptions.ClientError as e:
             if "MalformedPolicyDocument" in str(e):
                 pass  # User doesn't exist
@@ -279,7 +305,8 @@ def brute_force_role_names(client):
                 found_roles.append(role_arn)
                 roles = "\n".join(found_roles)
                 sys.stdout.write(f"\033[1A\r\033[K{Fore.MAGENTA}{role_arn}\n")
-
+        except KeyboardInterrupt:
+            raise
         except botocore.exceptions.ClientError as e:
             if "MalformedPolicyDocument" in str(e):
                 pass  # Role doesn't exist

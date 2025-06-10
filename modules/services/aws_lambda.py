@@ -26,8 +26,12 @@ def list_lambda_functions(victim_session):
                     )
                     response_payload = json.loads(response['Payload'].read().decode('utf-8'))
                     print(f"{Fore.MAGENTA}\nRegion: {region} | Function: {function['FunctionName']} | \nResponse:\n {json.dumps(response_payload, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
                 except:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to invoke Lambda functions")
+        except KeyboardInterrupt:
+            raise
         except:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Lambda functions in region {region}")
