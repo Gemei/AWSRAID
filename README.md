@@ -1,4 +1,4 @@
-![banner.png](banner.png)
+![banner](https://github.com/user-attachments/assets/bc73c560-d7a3-41cd-9b6d-bad43f67df1f)
 
 # AWSRAID
 
