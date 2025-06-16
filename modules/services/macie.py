@@ -2,15 +2,17 @@ from colorama import Fore
 import json, sys
 from modules.utils import custom_serializer
 import modules.globals as my_globals
+from botocore.config import Config
 
 def macie_init_enum(victim_session, attacker_session):
     list_macie_findings(victim_session)
 
 def list_macie_findings(victim_session):
     print(f"{Fore.GREEN}Enumerating Macie Findings...")
+    config = Config(connect_timeout=5, read_timeout=10, retries={'max_attempts': 1})
     for region in my_globals.aws_regions:
         try:
-            macie_client = victim_session.client("macie2", region_name=region)
+            macie_client = victim_session.client("macie2", region_name=region, config=config)
             findings = macie_client.list_findings().get("findingIds", [])
             print(f"{Fore.MAGENTA}\nRegion: {region} | Macie Findings Count: {len(findings)}")
             try:

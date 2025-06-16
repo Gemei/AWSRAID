@@ -2,17 +2,18 @@ from colorama import Fore
 import json, sys
 from modules.utils import custom_serializer
 import modules.globals as my_globals
+from botocore.config import Config
 
 def code_commit_init_enum(victim_session, attacker_session):
     list_code_commit_repos(victim_session)
 
 def list_code_commit_repos(victim_session):
     print(f"{Fore.GREEN}Enumerating CodeCommit Repositories...")
+    config = Config(connect_timeout=5, read_timeout=10, retries={'max_attempts': 1})
     for region in my_globals.aws_regions:
         try:
-            code_commit_client = victim_session.client("codecommit", region_name=region)
-            response = code_commit_client.list_repositories()
-            repos = response.get("repositories", [])
+            code_commit_client = victim_session.client("codecommit", region_name=region, config=config)
+            repos = code_commit_client.list_repositories().get("repositories", [])
             for repo in repos:
                 print(f"{Fore.MAGENTA}\nRegion: {region} | Repository: {repo['repositoryName']} | ID: {repo['repositoryId']}")
                 try:

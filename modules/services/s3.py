@@ -72,7 +72,7 @@ def get_bucket_policy(s3_client, buckets):
                 print(f"{Fore.CYAN}Getting policy for bucket: {bucket}")
                 response = s3_client.get_bucket_policy(Bucket=bucket)
                 policy = json.loads(response['Policy'])
-                print(f"{Fore.MAGENTA}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
+                print(f"{Fore.YELLOW}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
             except:
@@ -102,10 +102,10 @@ def download_bucket_objects(s3_client, buckets):
     if not buckets:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping download bucket objects")
         return
-
     for bucket in buckets:
+        failed_to_download_file_number = 0
         try:
-            print(f"{Fore.CYAN}Processing bucket: {bucket}")
+            print(f"{Fore.CYAN}\rProcessing bucket: {bucket}")
             create_bucket_dirs(bucket)
             os.chdir(bucket)
             bucket_objects = s3_client.list_objects_v2(Bucket=bucket)
@@ -121,14 +121,15 @@ def download_bucket_objects(s3_client, buckets):
                 sys.stdout.write(f"{Fore.MAGENTA}[{i}/{total_files}] Downloading {file_name}")
                 sys.stdout.flush()
                 if(i == total_files):
-                    print("\n") # Add a new line in the terminal after download has completed.
+                    print("\r") # Add a new carriage return in the terminal after download has completed.
                 try:
                     with open(file_name, "wb") as file:
                         s3_client.download_fileobj(bucket, file_name, file)
                 except KeyboardInterrupt:
                     raise
                 except:
-                    print(f"{Fore.LIGHTBLACK_EX} | Failed to download {file_name} from {bucket}")
+                    failed_to_download_file_number += 1
+            print(f"{Fore.LIGHTBLACK_EX} | Downloaded {total_files - failed_to_download_file_number} of {total_files} files from {bucket}")
             os.chdir("..")
             delete_bucket_dirs(bucket)
         except KeyboardInterrupt:
