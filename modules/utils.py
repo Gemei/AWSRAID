@@ -96,5 +96,5 @@ def validate_config(config):
             print(f"{Fore.RED}{error}")
         sys.exit(0)
 
-    if not my_globals.victim_aws_account_ID:
+    if not my_globals.victim_access_key:
         return True
