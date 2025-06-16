@@ -46,7 +46,7 @@ pip install -r requirements.txt
 	"victim_session_token": "",
 	"victim_buckets": ["mega-big-tech"],
 	"victim_aws_account_ID": "78501******",
-    "victim_regions": ["us-east-1","us-east-2"],
+	"victim_regions": ["us-east-1","us-east-2"],
 	"attacker_access_key": "AKIAVIE**********",
 	"attacker_secret_access_key": "k6UqaX*********",
 	"attacker_region": "us-east-1",
