@@ -98,3 +98,5 @@ def validate_config(config):
 
     if not my_globals.victim_access_key:
         return True
+    else:
+        return False
