@@ -10,13 +10,13 @@ from modules.utils import custom_serializer
 def iam_init_enum(victim_iam_client, attacker_client):
     if victim_iam_client:
         list_iam_users(victim_iam_client, my_globals.victim_aws_account_ID)
+        list_current_user_policies(victim_iam_client, my_globals.victim_aws_username)
         list_iam_groups(victim_iam_client, my_globals.victim_aws_account_ID)
         list_iam_groups_for_current_user(victim_iam_client, my_globals.victim_aws_username)
         list_group_policies(victim_iam_client, my_globals.victim_groups)
-        list_current_user_policies(victim_iam_client, my_globals.victim_aws_username)
-        list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
         list_iam_roles(victim_iam_client, my_globals.victim_aws_account_ID)
         list_role_attached_policies(victim_iam_client, my_globals.victim_roles)
+        list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
     if attacker_client and my_globals.user_name_wordlist and my_globals.start_username_brute_force:
         brute_force_usernames(attacker_client)
     if attacker_client and my_globals.user_name_wordlist and my_globals.start_role_name_brute_force:
@@ -59,7 +59,7 @@ def list_iam_groups_for_current_user(iam_client, user_name):
             print(f"{Fore.MAGENTA}User: {group['GroupName']} | ARN: {group['Arn']}")
     except KeyboardInterrupt:
         raise
-    except Exception as e:
+    except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list IAM Groups For Current User")
 
 ########################## All Customer Managed Policies ##########################
@@ -69,7 +69,7 @@ def list_iam_policies(iam_client, aws_id):
     try:
         policies = iam_client.list_policies(Scope='All').get("Policies", [])
         for policy in policies:
-            if (aws_id in policy['Arn']): # Only print customer managed policies
+            if aws_id in policy['Arn']: # Only print customer managed policies
                 print(f"{Fore.CYAN}Policy: {policy['PolicyName']} | ARN: {policy['Arn']}")
                 describe_iam_policy(iam_client, policy['Arn'])
     except KeyboardInterrupt:
@@ -83,7 +83,7 @@ def list_iam_roles(iam_client, aws_id):
         roles = iam_client.list_roles().get("Roles", [])
         my_globals.victim_roles = roles
         for role in roles:
-            if (aws_id in role['Arn']):  # Only print customer managed roles
+            if aws_id in role['Arn']:  # Only print customer managed roles
                 print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}")
                 describe_iam_role(iam_client, role['RoleName'])
     except KeyboardInterrupt:
@@ -98,12 +98,12 @@ def list_current_user_policies(iam_client, user_name):
     try:
         inline_policies = iam_client.list_user_policies(UserName=user_name).get("PolicyNames", [])
         if inline_policies:
-            print(f"{Fore.MAGENTA}Inline Policies:")
+            print(f"{Fore.CYAN}Inline Policies:")
             for policy in inline_policies:
                 print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                 describe_iam_policy(iam_client, policy['PolicyArn'])
         else:
-            print(f"{Fore.LIGHTBLACK_EX}No inline policies found.")
+            print(f"{Fore.LIGHTBLACK_EX}No inline policies found for user: {user_name}.")
     except KeyboardInterrupt:
         raise
     except:
@@ -112,12 +112,12 @@ def list_current_user_policies(iam_client, user_name):
     try:
         attached_policies = iam_client.list_attached_user_policies(UserName=user_name).get("AttachedPolicies", [])
         if attached_policies:
-            print(f"{Fore.MAGENTA}Attached Policies:")
+            print(f"{Fore.CYAN}Attached Policies:")
             for policy in attached_policies:
                 print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                 describe_iam_policy(iam_client, policy['PolicyArn'])
         else:
-            print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+            print(f"{Fore.LIGHTBLACK_EX}No attached policies found for user: {user_name}.")
     except KeyboardInterrupt:
         raise
     except:
@@ -135,11 +135,12 @@ def list_group_policies(iam_client, groups):
                 # Inline policies attached directly to the group
                 inline_policies = iam_client.list_group_policies(GroupName=group_name).get("PolicyNames", [])
                 if inline_policies:
-                    for policy_name in inline_policies:
+                    print(f"{Fore.CYAN}Inline Policies:")
+                    for policy in inline_policies:
                         print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
-                    print(f"{Fore.LIGHTBLACK_EX}No inline policies found.")
+                    print(f"{Fore.LIGHTBLACK_EX}No inline policies found for group: {group_name}.")
             except KeyboardInterrupt:
                 raise
             except:
@@ -149,17 +150,18 @@ def list_group_policies(iam_client, groups):
                 # Managed policies attached to the group
                 attached_policies = iam_client.list_attached_group_policies(GroupName=group_name).get("AttachedPolicies", [])
                 if attached_policies:
+                    print(f"{Fore.CYAN}Attached Policies:")
                     for policy in attached_policies:
                         print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
-                    print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+                    print(f"{Fore.LIGHTBLACK_EX}No attached policies found for group: {group_name}.")
             except KeyboardInterrupt:
                 raise
             except:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate attached policies for group: {group_name}")
 
-########################## Attached role policies ##########################
+########################## Inline & attached role policies ##########################
 
 def list_role_attached_policies(iam_client, roles):
     if roles:
@@ -168,14 +170,28 @@ def list_role_attached_policies(iam_client, roles):
             print(f"{Fore.CYAN}Role: {role['Arn']}")
             role_name = role["RoleName"]
             try:
+                # Inline policies attached directly to the role
+                inline_policies = iam_client.list_role_policies(RoleName=role_name).get("PolicyNames", [])
+                if inline_policies:
+                    print(f"{Fore.CYAN}Inline Policies:")
+                    for policy in inline_policies:
+                        print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
+                        describe_iam_policy(iam_client, policy['PolicyArn'])
+                else:
+                    print(f"{Fore.LIGHTBLACK_EX}No inline policies found for role: {role_name}.")
+            except KeyboardInterrupt:
+                raise
+            except:
+                print(f"{Fore.LIGHTBLACK_EX}Failed to enumerate inline policies for group: {role_name}")
+            try:
                 attached_policies = iam_client.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
                 if attached_policies:
-                    print(f"{Fore.MAGENTA}Attached Policies:")
+                    print(f"{Fore.CYAN}Attached Policies:")
                     for policy in attached_policies:
                         print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                         describe_iam_policy(iam_client, policy['PolicyArn'])
                 else:
-                    print(f"{Fore.LIGHTBLACK_EX}No attached policies found.")
+                    print(f"{Fore.LIGHTBLACK_EX}No attached policies found for role: {role_name}.")
             except KeyboardInterrupt:
                 raise
             except:
