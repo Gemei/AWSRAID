@@ -16,6 +16,7 @@ def s3_init_enum(victim_s3_client, attacker_session):
         get_bucket_policy(victim_s3_client, buckets)
     public_buckets = list_public_buckets(my_globals.unsigned_s3_client, buckets)
     download_public_bucket(my_globals.unsigned_s3_client, buckets)
+    # If victim AWS account ID was not provided, then brute-force it from a public bucket
     if not my_globals.victim_aws_account_ID:
         if public_buckets and my_globals.attacker_S3_role_arn and attacker_session :
             brute_force_aws_account_id(public_buckets, my_globals.attacker_S3_role_arn, attacker_session)

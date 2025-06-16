@@ -40,7 +40,7 @@ config = load_config(my_globals.CONFIG_FILE)
 def main():
     print_banner()
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
-    validate_config(config)
+    no_victim_credentials_data = validate_config(config)
 
     victim_session, victim_clients = initialize_aws_regionless_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token)
     attacker_session, attacker_clients = initialize_aws_regionless_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
@@ -48,6 +48,7 @@ def main():
     # For public access buckets
     initialize_aws_unsigned_s3_client()
 
+    # These functions require a region to be set during client creation
     region_functions = [
         secrets_manager_init_enum,
         ec2_init_enum,
@@ -61,16 +62,22 @@ def main():
         code_commit_init_enum,
     ]
 
+    # These functions do not require a region to be set during client creation
     regionless_functions = [sts_init_enum, iam_init_enum, s3_init_enum]
 
-    for function in regionless_functions:
-        service = SERVICE_MAP[function]
-        function(victim_clients.get(service), attacker_clients.get(service))
+    # These functions would run if the user has only provided a public s3 bucket or AWS account ID
+    unauthenticated_functions = [iam_init_enum, s3_init_enum]
 
+    if not no_victim_credentials_data:
+        for function in regionless_functions:
+            service = SERVICE_MAP[function]
+            function(victim_clients.get(service), attacker_clients.get(service))
 
-    for function in region_functions:
-        service = SERVICE_MAP[function]
-        function(victim_session, attacker_session)
+        for function in region_functions:
+            function(victim_session, attacker_session)
+    else:
+        for function in unauthenticated_functions:
+            function(None, attacker_session)
 
 if __name__ == "__main__":
     try:

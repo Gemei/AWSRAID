@@ -73,16 +73,20 @@ def validate_config(config):
     if not my_globals.start_role_name_brute_force:
         warnings.append("[*] Role name brute-force set to \"false\" in the \"enum.config.json\" config file.")
 
+    if not os.path.isfile(my_globals.user_name_wordlist) and my_globals.start_username_brute_force:
+        errors.append(f"[#] Supplied usernames wordlist {my_globals.user_name_wordlist} doesn't exist or inaccessible, check config in \"enum.config.json\" file."
+                      f" Scan cannot run!")
+
+    if not os.path.isfile(my_globals.role_name_wordlist) and my_globals.start_role_name_brute_force:
+        errors.append(f"[#] Supplied usernames wordlist {my_globals.role_name_wordlist} doesn't exist or inaccessible, check config in \"enum.config.json\" file."
+                      f" Scan cannot run!")
+
     if all(not x for x in [my_globals.attacker_access_key, my_globals.attacker_secret_access_key,
                            my_globals.victim_secret_access_key, my_globals.victim_access_key]):
         errors.append("[#] You didn't supply enough information in \"enum.config.json\" config file. Scan cannot run!")
 
     if all(not x for x in [my_globals.victim_access_key, my_globals.victim_buckets, my_globals.victim_aws_account_ID]):
         errors.append("[#] You didn't supply enough information in \"enum.config.json\" config file. Scan cannot run!")
-
-    if not os.path.isfile(my_globals.user_name_wordlist):
-        errors.append(f"[#] Supplied usernames wordlist {my_globals.user_name_wordlist} doesn't exist or inaccessible, check config in \"enum.config.json\" file."
-                      f" Scan cannot run!")
 
     for warning in warnings:
         print(f"{Fore.YELLOW}{warning}")
@@ -91,3 +95,6 @@ def validate_config(config):
         for error in errors:
             print(f"{Fore.RED}{error}")
         sys.exit(0)
+
+    if not my_globals.victim_aws_account_ID:
+        return True
