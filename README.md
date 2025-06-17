@@ -19,7 +19,7 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 - Identifies RDS databases
 - Lists Cognito user pools
 - Lists SSM parameters, Macie findings, and Secrets Manager secrets
-- Lists Lambda functions and invokes them to inspect responses
+- Lists Lambda functions, configurations, and attempt to invoke them
 - Lists S3 buckets, checks for public access, and downloads bucket contents
 - Brute-force AWS account ID if a public S3 bucket was found or provided
 - Get AWS account ID from an access key
