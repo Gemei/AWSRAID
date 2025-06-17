@@ -18,7 +18,7 @@ def enumerate_ec2(victim_session):
             reservations = ec2_client.describe_instances().get("Reservations", [])
             for reservation in reservations:
                 for instance in reservation.get("Instances", []):
-                    print(f"{Fore.MAGENTA}\nRegion {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
+                    print(f"{Fore.MAGENTA}Region {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
                     describe_ec2_instance(instance)
         except KeyboardInterrupt:
             raise
@@ -60,7 +60,7 @@ def list_ebs_volumes(victim_session):
             ec2_client = victim_session.client("ec2", region)
             volumes = ec2_client.describe_volumes().get("Volumes", [])
             for volume in volumes:
-                print(f"{Fore.MAGENTA}\nRegion {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
+                print(f"{Fore.MAGENTA}Region {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
         except KeyboardInterrupt:
             raise
         except:

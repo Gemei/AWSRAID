@@ -141,9 +141,9 @@ def download_bucket_objects(s3_client, buckets):
 
         except KeyboardInterrupt:
             raise
-        except Exception as e:
+        except:
             sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
-            print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}: {e}")
+            print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}")
 
 # Brute-force AWS Account ID from a public bucket
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
