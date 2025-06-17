@@ -3,7 +3,7 @@
 # AWSRAID
 
 A modular AWS enumeration tool for penetration testing and security auditing.  
-This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and more.
+This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda, RDS, and more.
 
 ## Features
 
@@ -20,6 +20,7 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 - Lists Cognito user pools
 - Lists SSM parameters, Macie findings, and Secrets Manager secrets
 - Lists Lambda functions, configurations, and attempt to invoke them
+- Download lambda function code
 - Lists S3 buckets, checks for public access, and downloads bucket contents
 - Brute-force AWS account ID if a public S3 bucket was found or provided
 - Get AWS account ID from an access key
@@ -27,7 +28,6 @@ This tool uses `boto3` to enumerate services like IAM, EC2, S3, Lambda, RDS, and
 - Lists CodeCommit repositories and list branches for each repository
 
 ## Setup
-
 1. Clone the repo or unzip the archive.
 2. Install dependencies:
 
@@ -63,12 +63,14 @@ pip install -r requirements.txt
 5. Create IAM Role on your AWS account as outlined in [IAM_Role.md](https://github.com/Gemei/AWS_Enumerator/blob/main/IAM_Role.md)
 
 ## Usage
-
 Run the enumerator:
 
 ```bash
 python3 awsraid.py
 ```
+## Loot location
+If the script successfully downloaded S3 bucket objects and Lambda function code, 
+you will find the files in the `./LOOT` directory, located in the script’s base directory.
 
 ## To-Do
 - Expand coverage by adding more AWS services and security checks!
