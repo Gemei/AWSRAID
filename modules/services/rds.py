@@ -13,7 +13,7 @@ def list_rds_instances(victim_session):
             rds_client = victim_session.client("rds", region_name=region)
             dbs = rds_client.describe_db_instances().get("DBInstances", [])
             for db in dbs:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | RDS: {db['DBInstanceIdentifier']} | Status: {db['DBInstanceStatus']}")
+                print(f"{Fore.MAGENTA}Region: {region} | RDS: {db['DBInstanceIdentifier']} | Status: {db['DBInstanceStatus']}")
                 try:
                     print(f"{Fore.YELLOW}{json.dumps(db, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:

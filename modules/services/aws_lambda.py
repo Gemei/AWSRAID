@@ -58,8 +58,8 @@ def download_lambda_function(lambda_client, function, region):
         print(f"{Fore.MAGENTA}Region: {region} | Function: {function_name} | Code downloaded to {zip_file}")
     except KeyboardInterrupt:
         raise
-    except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to download Lambda function code for: {function_name}\nError: {e}")
+    except:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to download Lambda function code for: {function_name}")
 
 def list_lambda_functions(victim_session):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...")

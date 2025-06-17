@@ -12,7 +12,7 @@ def list_cognito_users(victim_session):
             cognito_client = victim_session.client("cognito-idp", region_name=region)
             pools = cognito_client.list_user_pools(MaxResults=60).get("UserPools", [])
             for pool in pools:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | User Pool: {pool['Name']} | ID: {pool['Id']}")
+                print(f"{Fore.MAGENTA}Region: {region} | User Pool: {pool['Name']} | ID: {pool['Id']}")
                 try:
                     users = cognito_client.list_users(UserPoolId=pool['Id']).get("Users", [])
                     for user in users:

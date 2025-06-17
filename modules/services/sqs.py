@@ -13,7 +13,7 @@ def list_sqs_queues(victim_session):
             sqs_client = victim_session.client("sqs", region_name=region)
             queues = sqs_client.list_queues().get("QueueUrls", [])
             for queue_url in queues:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | Queue URL: {queue_url}")
+                print(f"{Fore.MAGENTA}Region: {region} | Queue URL: {queue_url}")
                 try:
                     response = sqs_client.receive_message(
                         QueueUrl=queue_url,

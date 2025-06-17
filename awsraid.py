@@ -17,7 +17,7 @@ from modules.services.s3 import s3_init_enum
 from modules.services.code_commit import code_commit_init_enum
 from modules.utils import validate_config, print_banner
 
-init(autoreset=True)
+init(autoreset=True, strip=False)
 
 SERVICE_MAP = {
     sts_init_enum: "sts",

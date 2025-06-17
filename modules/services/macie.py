@@ -14,7 +14,7 @@ def list_macie_findings(victim_session):
         try:
             macie_client = victim_session.client("macie2", region_name=region, config=config)
             findings = macie_client.list_findings().get("findingIds", [])
-            print(f"{Fore.MAGENTA}\nRegion: {region} | Macie Findings Count: {len(findings)}")
+            print(f"{Fore.MAGENTA}Region: {region} | Macie Findings Count: {len(findings)}")
             try:
                 if findings:
                     details = macie_client.get_findings(findingIds=findings[:5]).get("findings", [])

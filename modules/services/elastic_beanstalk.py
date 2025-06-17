@@ -20,7 +20,7 @@ def list_elastic_beanstalk(victim_session):
                 sys.stdout.flush()
                 continue
             for app in apps:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | Application: {app['ApplicationName']}")
+                print(f"{Fore.MAGENTA}Region: {region} | Application: {app['ApplicationName']}")
                 try:
                     envs = eb_client.describe_environments(ApplicationName=app['ApplicationName']).get("Environments", [])
                     print(f"{Fore.YELLOW}Environments:\n{json.dumps(envs, indent=4, sort_keys=True, default=custom_serializer)}")

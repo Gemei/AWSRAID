@@ -13,7 +13,7 @@ def list_ssm_parameters(victim_session):
             ssm_client = victim_session.client("ssm", region_name=region)
             params = ssm_client.describe_parameters().get("Parameters", [])
             for param in params[:5]:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | SSM Parameter: {param['Name']}")
+                print(f"{Fore.MAGENTA}Region: {region} | SSM Parameter: {param['Name']}")
                 try:
                     value = ssm_client.get_parameter(Name=param['Name'], WithDecryption=True).get("Parameter", {})
                     print(f"{Fore.YELLOW}{json.dumps(value, indent=4, sort_keys=True, default=custom_serializer)}")

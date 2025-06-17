@@ -15,7 +15,7 @@ def list_code_commit_repos(victim_session):
             code_commit_client = victim_session.client("codecommit", region_name=region, config=config)
             repos = code_commit_client.list_repositories().get("repositories", [])
             for repo in repos:
-                print(f"{Fore.MAGENTA}\nRegion: {region} | Repository: {repo['repositoryName']} | ID: {repo['repositoryId']}")
+                print(f"{Fore.MAGENTA}Region: {region} | Repository: {repo['repositoryName']} | ID: {repo['repositoryId']}")
                 try:
                     repo_details = code_commit_client.get_repository(repositoryName=repo['repositoryName']).get("repositoryMetadata", {})
                     print(f"{Fore.YELLOW}{json.dumps(repo_details, indent=4, sort_keys=True, default=custom_serializer)}")

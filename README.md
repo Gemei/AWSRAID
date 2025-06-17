@@ -67,10 +67,16 @@ pip install -r requirements.txt
 5. Create IAM Role on your AWS account as outlined in [IAM_Role.md](https://github.com/Gemei/AWS_Enumerator/blob/main/IAM_Role.md)
 
 ## Usage
+_Note: Only tested on Linux and WSL in Windows._
+
 Run the enumerator:
 
 ```bash
 python3 awsraid.py
+```
+Run the enumerator and output to file:
+```bash
+python3 awsraid.py | tee >(sed 's/\x1b\[[0-9;]*m//g' > output.txt)
 ```
 ## Loot location
 If the script successfully downloaded S3 bucket objects and Lambda function code, 
