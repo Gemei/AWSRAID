@@ -68,6 +68,7 @@ def list_ebs_volumes(victim_session):
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
             sys.stdout.flush()
     print("")
+
 def list_ebs_snapshots(victim_session):
     print(f"{Fore.GREEN}Enumerating EBS Snapshots...")
     for region in my_globals.aws_regions:
@@ -85,6 +86,7 @@ def list_ebs_snapshots(victim_session):
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
             sys.stdout.flush()
     print("")
+
 def list_ebs_public_snapshots(attacker_session):
     print(f"{Fore.GREEN}Enumerating Public EBS Snapshots for Account: {my_globals.victim_aws_account_ID}...")
     for region in my_globals.aws_regions:

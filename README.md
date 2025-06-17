@@ -6,26 +6,30 @@ A modular AWS enumeration tool for penetration testing and security auditing.
 This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda, RDS, and more.
 
 ## Features
+### IAM
+#### Users & Groups
+- List IAM users and groups
+- Brute-force usernames for a specified AWS account ID
 
-- Lists customer-managed IAM roles and policies
-- List users and groups
-- List inline and attached user and group policies
-- List attached role policies
-- Brute-force usernames for a given AWS account ID
-- Brute-force role names for a given AWS account ID
-- Lists EC2 instances
-- Lists EBS volumes and snapshots
-- Lists EBS public snapshots using victim's AWS account ID
-- Identifies RDS databases
-- Lists Cognito user pools
-- Lists SSM parameters, Macie findings, and Secrets Manager secrets
-- Lists Lambda functions, configurations, and attempt to invoke them
-- Download lambda function code
-- Lists S3 buckets, checks for public access, and downloads bucket contents
-- Brute-force AWS account ID if a public S3 bucket was found or provided
-- Get AWS account ID from an access key
-- Lists Elastic Beanstalk applications
-- Lists CodeCommit repositories and list branches for each repository
+#### Policies & Roles
+- List customer-managed IAM roles and policies
+- List inline and attached policies for users, groups, and roles
+- Brute-force role names for a specified AWS account ID
+
+### AWS Resources
+- List EC2 instances
+- List EBS volumes and snapshots
+- List public EBS snapshots for a given AWS account ID
+- Identify RDS databases
+- List Cognito user pools
+- List SSM parameters, Macie findings, and Secrets Manager secrets
+- List Lambda functions, retrieve configurations, and attempt invocation
+- Download Lambda function code
+- List S3 buckets, check for public access, and download bucket contents
+- Brute-force AWS account ID if a public S3 bucket is found or provided
+- Retrieve AWS account ID from an access key
+- List Elastic Beanstalk applications
+- List CodeCommit repositories and their branches
 
 ## Setup
 1. Clone the repo or unzip the archive.
