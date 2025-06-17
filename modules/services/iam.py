@@ -99,9 +99,15 @@ def list_current_user_policies(iam_client, user_name):
         inline_policies = iam_client.list_user_policies(UserName=user_name).get("PolicyNames", [])
         if inline_policies:
             print(f"{Fore.CYAN}Inline Policies:")
-            for policy in inline_policies:
-                print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
-                describe_iam_policy(iam_client, policy['PolicyArn'])
+            for policy_name in inline_policies:
+                print(f"{Fore.MAGENTA}- {policy_name}")
+                try:
+                    policy_doc = iam_client.get_user_policy(UserName=user_name, PolicyName=policy_name)
+                    print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
+                except:
+                    print(f"{Fore.LIGHTBLACK_EX}Failed to describe policy {policy_name}")
         else:
             print(f"{Fore.LIGHTBLACK_EX}No inline policies found for user: {user_name}.")
     except KeyboardInterrupt:
@@ -136,9 +142,15 @@ def list_group_policies(iam_client, groups):
                 inline_policies = iam_client.list_group_policies(GroupName=group_name).get("PolicyNames", [])
                 if inline_policies:
                     print(f"{Fore.CYAN}Inline Policies:")
-                    for policy in inline_policies:
-                        print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
-                        describe_iam_policy(iam_client, policy['PolicyArn'])
+                    for policy_name in inline_policies:
+                        print(f"{Fore.MAGENTA}- {policy_name}")
+                        try:
+                            policy_doc = iam_client.get_group_policy(GroupName=group_name, PolicyName=policy_name)
+                            print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                        except KeyboardInterrupt:
+                            raise
+                        except:
+                            print(f"{Fore.LIGHTBLACK_EX}Failed to describe policy {policy_name}")
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No inline policies found for group: {group_name}.")
             except KeyboardInterrupt:
@@ -174,9 +186,15 @@ def list_role_attached_policies(iam_client, roles):
                 inline_policies = iam_client.list_role_policies(RoleName=role_name).get("PolicyNames", [])
                 if inline_policies:
                     print(f"{Fore.CYAN}Inline Policies:")
-                    for policy in inline_policies:
-                        print(f"{Fore.MAGENTA}- {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
-                        describe_iam_policy(iam_client, policy['PolicyArn'])
+                    for policy_name in inline_policies:
+                        print(f"{Fore.MAGENTA}- {policy_name}")
+                        try:
+                            policy_doc = iam_client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
+                            print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                        except KeyboardInterrupt:
+                            raise
+                        except:
+                            print(f"{Fore.LIGHTBLACK_EX}Failed to describe policy {policy_name}")
                 else:
                     print(f"{Fore.LIGHTBLACK_EX}No inline policies found for role: {role_name}.")
             except KeyboardInterrupt:

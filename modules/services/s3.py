@@ -88,6 +88,10 @@ def ensure_dir_for_file(path):
     if directory and not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
 
+def delete_failed_files(path):
+    if path and os.path.exists(path):
+        os.remove(path)
+
 def download_bucket_objects(s3_client, buckets):
     if not buckets:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping download bucket objects")
@@ -121,10 +125,15 @@ def download_bucket_objects(s3_client, buckets):
                 except KeyboardInterrupt:
                     raise
                 except:
+                    # Delete file if download failed
+                    delete_failed_files(local_path)
                     failed += 1
 
             print("\r")
-            print(f"{Fore.LIGHTBLACK_EX} | Downloaded {total_files - failed} of {total_files} files from {bucket}")
+            if failed == 0:
+                print(f"{Fore.LIGHTBLACK_EX} | Downloaded {total_files - failed} of {total_files} files from {bucket}")
+            else:
+                print(f"{Fore.LIGHTRED_EX} | Downloaded {total_files - failed} of {total_files} files from {bucket}")
 
         except KeyboardInterrupt:
             raise
