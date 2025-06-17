@@ -11,6 +11,7 @@ This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda,
 ## Features
 ### IAM
 #### Users & Groups
+- Retrieve AWS account ID from an access key
 - List IAM users and groups
 - Brute-force usernames for a specified AWS account ID
 
@@ -30,7 +31,6 @@ This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda,
 - Download Lambda function code
 - List S3 buckets, check for public access, and download bucket contents
 - Brute-force AWS account ID if a public S3 bucket is found or provided
-- Retrieve AWS account ID from an access key
 - List Elastic Beanstalk applications
 - List CodeCommit repositories and their branches
 
