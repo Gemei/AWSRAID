@@ -5,6 +5,9 @@
 A modular AWS enumeration tool for penetration testing and security auditing.  
 This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda, RDS, and more.
 
+## Sample Output
+![AWSRAID_GIF](https://github.com/user-attachments/assets/b41999e5-f808-43a8-afce-c1c35ef85e65)
+
 ## Features
 ### IAM
 #### Users & Groups
