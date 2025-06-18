@@ -10,10 +10,10 @@ This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda,
 
 ## Features
 ### IAM
-#### Users & Groups
-- Retrieve AWS account ID from an access key
+#### Users, Groups & Accounts
 - List IAM users and groups
 - Brute-force usernames for a specified AWS account ID
+- Retrieve AWS account ID from an access key
 
 #### Policies & Roles
 - List customer-managed IAM roles and policies
@@ -87,6 +87,8 @@ you will find the files in the `./LOOT` directory, located in the script’s bas
 
 ## To-Do
 - Expand coverage by adding more AWS services and security checks!
+- Add API Gateway checks
+- Generate a report for potential attack paths, e.g. privesc, leaked credentials, ...etc
 - Add the option to specify an output file.
 - Add multi-threading
 - Add better situational exception handling

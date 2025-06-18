@@ -15,7 +15,7 @@ from modules.services.aws_lambda import lambda_init_enum
 from modules.services.sqs import sqs_init_enum
 from modules.services.s3 import s3_init_enum
 from modules.services.code_commit import code_commit_init_enum
-from modules.utils import validate_config, print_banner
+from modules.utils import *
 
 init(autoreset=True, strip=False)
 
@@ -40,7 +40,7 @@ config = load_config(my_globals.CONFIG_FILE)
 def main():
     print_banner()
     print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
-    no_victim_credentials_data = validate_config(config)
+    validate_config(config)
 
     victim_session, victim_clients = initialize_aws_regionless_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token)
     attacker_session, attacker_clients = initialize_aws_regionless_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
@@ -68,16 +68,29 @@ def main():
     # These functions would run if the user has only provided a public s3 bucket or AWS account ID
     unauthenticated_functions = [iam_init_enum, s3_init_enum]
 
-    if not no_victim_credentials_data:
+    if has_attacker_creds() and has_victim_creds():
         for function in regionless_functions:
             service = SERVICE_MAP[function]
             function(victim_clients.get(service), attacker_clients.get(service))
 
         for function in region_functions:
             function(victim_session, attacker_session)
-    else:
+
+    elif has_attacker_creds() and not has_victim_creds():
         for function in unauthenticated_functions:
             function(None, attacker_session)
+
+    elif has_victim_creds() and not has_attacker_creds():
+        for function in regionless_functions:
+            service = SERVICE_MAP[function]
+            function(victim_clients.get(service), None)
+
+        for function in region_functions:
+            function(victim_session, None)
+    else:
+        print(f"{Fore.RED}[#] You didn't supply enough information in \"enum.config.json\" config file. Scan cannot run!")
+        print(f"{Fore.RED}Exiting...")
+        exit(1)
 
 if __name__ == "__main__":
     try:
