@@ -1,10 +1,6 @@
-import json, botocore
-import sys
-
+import json, botocore, sys
 import modules.globals as my_globals
 from colorama import Fore
-
-from modules.globals import victim_groups
 from modules.utils import custom_serializer
 
 def iam_init_enum(victim_iam_client, attacker_client):
@@ -15,7 +11,7 @@ def iam_init_enum(victim_iam_client, attacker_client):
         list_iam_groups_for_current_user(victim_iam_client, my_globals.victim_aws_username)
         list_group_policies(victim_iam_client, my_globals.victim_groups)
         list_iam_roles(victim_iam_client, my_globals.victim_aws_account_ID)
-        list_role_attached_policies(victim_iam_client, my_globals.victim_roles)
+        list_role_policies(victim_iam_client, my_globals.victim_roles)
         list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
     if attacker_client and my_globals.user_name_wordlist and my_globals.start_username_brute_force:
         brute_force_usernames(attacker_client)
@@ -85,7 +81,7 @@ def list_iam_roles(iam_client, aws_id):
         for role in roles:
             if aws_id in role['Arn']:  # Only print customer managed roles
                 print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}")
-                describe_iam_role(iam_client, role['RoleName'])
+                get_role_trust_policy(iam_client, role['RoleName'])
     except KeyboardInterrupt:
         raise
     except:
@@ -175,7 +171,7 @@ def list_group_policies(iam_client, groups):
 
 ########################## Inline & attached role policies ##########################
 
-def list_role_attached_policies(iam_client, roles):
+def list_role_policies(iam_client, roles):
     if roles:
         print(f"{Fore.GREEN}Enumerating Policies For All Roles...")
         for role in roles:
@@ -227,7 +223,8 @@ def describe_iam_policy(iam_client, policy_arn):
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to describe policy {policy_arn}")
 
-def describe_iam_role(iam_client, role_name):
+# Describes the role trust policy
+def get_role_trust_policy(iam_client, role_name):
     try:
         role_detail = iam_client.get_role(RoleName=role_name)["Role"]
         print(f"{Fore.YELLOW}{json.dumps(role_detail['AssumeRolePolicyDocument'], indent=4, sort_keys=True, default=custom_serializer)}")

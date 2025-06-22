@@ -21,7 +21,7 @@ This tool uses `boto3` to list and enumerate services like IAM, EC2, S3, Lambda,
 - Brute-force role names for a specified AWS account ID
 
 ### AWS Resources
-- List EC2 instances
+- List EC2 instances, instance information, and userdata
 - List EBS volumes and snapshots
 - List public EBS snapshots for a given AWS account ID
 - Identify RDS databases
@@ -86,9 +86,11 @@ If the script successfully downloaded S3 bucket objects and Lambda function code
 you will find the files in the `./LOOT` directory, located in the script’s base directory.
 
 ## To-Do
-- Expand coverage by adding more AWS services and security checks!
-- Add API Gateway checks
 - Generate a report for potential attack paths, e.g. privesc, leaked credentials, ...etc
+- Add API Gateway checks
+- Add canary detection
+- Add S3 bucket object versions listing and download
 - Add the option to specify an output file.
 - Add multi-threading
 - Add better situational exception handling
+- Expand coverage by adding more AWS services and security checks!

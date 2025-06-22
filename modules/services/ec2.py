@@ -1,6 +1,6 @@
 import modules.globals as my_globals
 from colorama import Fore
-import sys
+import sys, base64
 
 def ec2_init_enum(victim_session, attacker_session):
     enumerate_ec2(victim_session)
@@ -19,7 +19,10 @@ def enumerate_ec2(victim_session):
             for reservation in reservations:
                 for instance in reservation.get("Instances", []):
                     print(f"{Fore.MAGENTA}Region {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
+                    print(f"{Fore.CYAN} | Instance information:")
                     describe_ec2_instance(instance)
+                    print(f"{Fore.CYAN} | Instance userdata:")
+                    get_userdata(ec2_client, instance)
         except KeyboardInterrupt:
             raise
         except:
@@ -52,6 +55,24 @@ def describe_ec2_instance(instance):
         raise
     except:
         print(f"{Fore.LIGHTBLACK_EX}Failed to describe EC2 instance")
+
+def get_userdata(ec2_client, instance):
+    try:
+        instance_id = instance['InstanceId']
+        user_data_resp = ec2_client.describe_instance_attribute(
+            InstanceId=instance_id,
+            Attribute='userData'
+        )
+        user_data = user_data_resp.get('UserData', {}).get('Value')
+        if user_data:
+            decoded_user_data = base64.b64decode(user_data).decode('utf-8')
+            print(f"{Fore.YELLOW}  User Data:\n{decoded_user_data}")
+        else:
+            print(f"{Fore.YELLOW}  User Data: None")
+    except KeyboardInterrupt:
+        raise
+    except:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to get EC2 instance userdata")
 
 def list_ebs_volumes(victim_session):
     print(f"{Fore.GREEN}Enumerating EBS Volumes...")
