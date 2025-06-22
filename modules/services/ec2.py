@@ -3,8 +3,8 @@ from colorama import Fore
 import sys, base64
 
 def ec2_init_enum(victim_session, attacker_session):
-    enumerate_ec2(victim_session)
     if victim_session:
+        enumerate_ec2(victim_session)
         list_ebs_volumes(victim_session)
         list_ebs_snapshots(victim_session)
     if attacker_session and my_globals.victim_aws_account_ID:
