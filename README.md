@@ -90,6 +90,7 @@ you will find the files in the `./LOOT` directory, located in the script’s bas
 - Add API Gateway checks
 - Add canary detection
 - Add S3 bucket object versions listing and download
+- Add EC2 launch template enumeration
 - Add the option to specify an output file.
 - Add multi-threading
 - Add better situational exception handling

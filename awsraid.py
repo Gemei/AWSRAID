@@ -79,6 +79,8 @@ def main():
     elif has_attacker_creds() and not has_victim_creds():
         for function in unauthenticated_functions:
             function(None, attacker_session)
+        # Called to list public EBS snapshots for a given AWS account ID
+        ec2_init_enum(None, attacker_session)
 
     elif has_victim_creds() and not has_attacker_creds():
         for function in regionless_functions:

@@ -3,8 +3,8 @@ from colorama import Fore
 import sys, base64
 
 def ec2_init_enum(victim_session, attacker_session):
-    enumerate_ec2(victim_session)
     if victim_session:
+        enumerate_ec2(victim_session)
         list_ebs_volumes(victim_session)
         list_ebs_snapshots(victim_session)
     if attacker_session and my_globals.victim_aws_account_ID:
@@ -14,7 +14,7 @@ def enumerate_ec2(victim_session):
     print(f"{Fore.GREEN}Enumerating EC2 Instances...")
     for region in my_globals.aws_regions:
         try:
-            ec2_client = victim_session.client("ec2", region),
+            ec2_client = victim_session.client("ec2", region)
             reservations = ec2_client.describe_instances().get("Reservations", [])
             for reservation in reservations:
                 for instance in reservation.get("Instances", []):
