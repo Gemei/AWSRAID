@@ -1,4 +1,4 @@
-import json,sys,os,shutil,requests,urllib3
+import json,shutil,requests,urllib3
 import modules.globals as my_globals
 from colorama import Fore
 from modules.utils import custom_serializer
@@ -165,9 +165,9 @@ def download_bucket_objects(s3_client, buckets):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
+            sys.stderr.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
             print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}")
-            log_error(f"Can't process bucket {bucket}\n | Error: {e}")
+            log_error(f"\n | Error:{e}")
 
 # Brute-force AWS Account ID from a public bucket
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):

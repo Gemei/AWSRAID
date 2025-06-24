@@ -83,8 +83,8 @@ def list_lambda_functions(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Lambda functions in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list Lambda functions in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list Lambda functions in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")

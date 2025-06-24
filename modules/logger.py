@@ -54,8 +54,8 @@ def init_logger():
 
     error_handler = logging.FileHandler(f"{BASE_ERROR_PATH}{timestamp}_Errors.log")
     error_handler.setLevel(logging.ERROR)
-    error_formatter = logging.Formatter('%(asctime)s - %(message)s')
-    error_handler.setFormatter(error_formatter)
+    #error_formatter = logging.Formatter('%(asctime)s - %(message)s')
+    #error_handler.setFormatter(error_formatter)
 
     logger.addHandler(output_handler)
     logger.addHandler(error_handler)

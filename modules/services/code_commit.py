@@ -37,8 +37,8 @@ def list_code_commit_repos(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list CodeCommit repositories in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list CodeCommit repositories in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list CodeCommit repositories in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")

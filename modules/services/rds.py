@@ -26,8 +26,8 @@ def list_rds_instances(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list RDS instances in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list RDS instances in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list RDS instances in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")

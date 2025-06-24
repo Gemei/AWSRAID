@@ -28,10 +28,10 @@ def enumerate_ec2(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EC2 instances in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list EC2 instances in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EC2 instances in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")
 
 def describe_ec2_instance(instance):
@@ -45,17 +45,17 @@ def describe_ec2_instance(instance):
         iam_instance_profile = instance.get('IamInstanceProfile', {}).get('Arn', 'N/A')
         tags = instance.get('Tags', [])
 
-        print(f"{Fore.YELLOW}Details for Instance {instance_id}:")
-        print(f"{Fore.YELLOW}  Type: {instance_type}")
-        print(f"{Fore.YELLOW}  State: {state}")
-        print(f"{Fore.YELLOW}  Public IP: {public_ip}")
-        print(f"{Fore.YELLOW}  Private IP: {private_ip}")
-        print(f"{Fore.YELLOW}  Key Name: {key_name}")
-        print(f"{Fore.YELLOW}  Instance Profile: {iam_instance_profile}")
+        print(f"{Fore.YELLOW} | Details for Instance {instance_id}:")
+        print(f"{Fore.YELLOW}  | Type: {instance_type}")
+        print(f"{Fore.YELLOW}  | State: {state}")
+        print(f"{Fore.YELLOW}  | Public IP: {public_ip}")
+        print(f"{Fore.YELLOW}  | Private IP: {private_ip}")
+        print(f"{Fore.YELLOW}  | Key Name: {key_name}")
+        print(f"{Fore.YELLOW}  | Instance Profile: {iam_instance_profile}")
         if tags:
-            print(f"{Fore.YELLOW}  Tags:")
+            print(f"{Fore.YELLOW}  | Tags:")
             for tag in tags:
-                print(f"{Fore.YELLOW}    {tag['Key']}: {tag['Value']}")
+                print(f"{Fore.YELLOW}   | {tag['Key']}: {tag['Value']}")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -72,9 +72,9 @@ def get_userdata(ec2_client, instance):
         user_data = user_data_resp.get('UserData', {}).get('Value')
         if user_data:
             decoded_user_data = base64.b64decode(user_data).decode('utf-8')
-            print(f"{Fore.YELLOW}  User Data:\n{decoded_user_data}")
+            print(f"{Fore.YELLOW} | User Data:\n  {decoded_user_data}")
         else:
-            print(f"{Fore.YELLOW}  User Data: None")
+            print(f"{Fore.YELLOW} | User Data: None")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -92,10 +92,10 @@ def list_ebs_volumes(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list EBS volumes in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")
 
 def list_ebs_snapshots(victim_session):
@@ -111,10 +111,10 @@ def list_ebs_snapshots(victim_session):
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list EBS snapshots in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")
 
 def list_ebs_public_snapshots(attacker_session):
@@ -131,12 +131,11 @@ def list_ebs_public_snapshots(attacker_session):
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
                 sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public snapshots found in region {region}")
                 sys.stdout.flush()
-                log_error(f"No public snapshots found in region {region}")
         except KeyboardInterrupt:
             raise
         except Exception as e:
-            sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list public EBS snapshots in region {region}")
-            sys.stdout.flush()
-            log_error(f"Failed to list public EBS snapshots in region {region}\n | Error:{e}")
+            sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list public EBS snapshots in region {region}")
+            sys.stderr.flush()
+            log_error(f"\n | Error:{e}")
     print("")

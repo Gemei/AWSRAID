@@ -1,5 +1,4 @@
-import sys
-from colorama import Fore, init
+from colorama import init
 from modules.config_loader import load_config
 from modules.aws_clients import *
 from modules.services.sts import sts_init_enum
