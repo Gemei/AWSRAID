@@ -80,6 +80,8 @@ def main():
             function(None, attacker_session)
         # Called to list public EBS snapshots for a given AWS account ID
         ec2_init_enum(None, attacker_session)
+        # Called to list public RDS snapshots and cluster snapshots for a given AWS account ID
+        rds_init_enum(None, attacker_session)
 
     elif has_victim_creds() and not has_attacker_creds():
         for function in regionless_functions:

@@ -129,7 +129,7 @@ def list_ebs_public_snapshots(attacker_session):
                     print(f"{Fore.MAGENTA}Region: {region} | Snapshot ID: {snapshot['SnapshotId']}")
             else:
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-                sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public snapshots found in region {region}")
+                sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public EBS snapshots found in region {region}")
                 sys.stdout.flush()
         except KeyboardInterrupt:
             raise
