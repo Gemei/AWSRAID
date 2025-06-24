@@ -66,8 +66,8 @@ pip install -r requirements.txt
 }
 ```
 
-4. Create S3 Role on your AWS account as outlined in [S3_Role.md](https://github.com/Gemei/AWS_Enumerator/blob/main/S3_Role.md)
-5. Create IAM Role on your AWS account as outlined in [IAM_Role.md](https://github.com/Gemei/AWS_Enumerator/blob/main/IAM_Role.md)
+4. Create S3 Role on your AWS account as outlined in [S3_Role.md](https://github.com/Gemei/AWSRAID/blob/main/assets/S3_Role.md)
+5. Create IAM Role on your AWS account as outlined in [IAM_Role.md](https://github.com/Gemei/AWSRAID/blob/main/assets/IAM_Role.md)
 
 ## Usage
 _Note: Only tested on Linux and WSL in Windows._
