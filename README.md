@@ -77,13 +77,14 @@ Run the enumerator:
 ```bash
 python3 awsraid.py
 ```
-Run the enumerator and output to file:
-```bash
-python3 awsraid.py | tee >(sed 's/\x1b\[[0-9;]*m//g' > output.txt)
-```
-## Loot location
-If the script successfully downloaded S3 bucket objects and Lambda function code, 
+
+## Loot and output location
+The tool will have a copy of its terminal output located at `./LOOT/AWSRAID_Output.log`
+
+Additionally, If the script successfully downloaded S3 bucket objects and Lambda function code, 
 you will find the files in the `./LOOT` directory, located in the script’s base directory.
+
+Finally, all errors will be timestamped and logged in the `./ERROR` directory.
 
 ## To-Do
 - Generate a report for potential attack paths, e.g. privesc, leaked credentials, ...etc

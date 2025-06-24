@@ -5,11 +5,13 @@ from modules.utils import custom_serializer
 from aws_assume_role_lib import assume_role
 from botocore.exceptions import ClientError
 from urllib3.exceptions import InsecureRequestWarning
+from modules.logger import *
 
 BASE_DOWNLOAD_PATH = "LOOT/S3_Buckets/"
 urllib3.disable_warnings(InsecureRequestWarning)
 
 def s3_init_enum(victim_s3_client, attacker_session):
+    enable_print_logging()
     buckets = my_globals.victim_buckets
     buckets = list(buckets or [])  # Prevent list type error
     if victim_s3_client:
@@ -39,8 +41,9 @@ def list_buckets(s3_client):
         return found_buckets
     except KeyboardInterrupt:
         raise
-    except:
+    except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to list S3 buckets")
+        log_error(f"Failed to list S3 buckets\n | Error: {e}")
         return []
 
 def download_private_bucket(s3_client, buckets):
@@ -66,7 +69,8 @@ def list_public_buckets(unsigned_s3_client, buckets):
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                print(f"{Fore.LIGHTBLACK_EX}Failed to access bucket {bucket} anonymously\n{e}")
+                print(f"{Fore.LIGHTBLACK_EX}Failed to access bucket {bucket} anonymously")
+                log_error(f"Failed to access bucket {bucket} anonymously\n | Error: {e}")
     else:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping public buckets check")
     return found_buckets
@@ -75,14 +79,23 @@ def get_bucket_policy(s3_client, buckets):
     if buckets:
         for bucket in buckets:
             try:
+                response = requests.get(f'https://{bucket}.s3.amazonaws.com', verify=False)
+                if response.status_code != 404:
+                    bucket_region = response.headers['x-amz-bucket-region']
+                    print(f"{Fore.CYAN} | Bucket Region: {bucket_region}")
+                else:
+                    print(f"{Fore.LIGHTBLACK_EX} | Bucket {bucket} doesn't exist")
+                    log_error(f" | Error: Bucket {bucket} doesn't exist")
+                    break
                 print(f"{Fore.CYAN}Getting policy for bucket: {bucket}")
                 response = s3_client.get_bucket_policy(Bucket=bucket)
                 policy = json.loads(response['Policy'])
                 print(f"{Fore.YELLOW}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
-            except:
+            except Exception as e:
                 print(f"{Fore.LIGHTBLACK_EX}Can't get bucket policy: {bucket}")
+                log_error(f"Can't get bucket policy: {bucket}\n | Error: {e}")
     else:
         print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping bucket policy check")
 
@@ -105,9 +118,13 @@ def download_bucket_objects(s3_client, buckets):
         try:
             print(f"{Fore.CYAN}Processing bucket: {bucket}")
             response = requests.get(f'https://{bucket}.s3.amazonaws.com', verify=False)
-            bucket_region = response.headers['x-amz-bucket-region']
-
-            print(f"{Fore.CYAN} | Bucket Region: {bucket_region}")
+            if response.status_code != 404:
+                bucket_region = response.headers['x-amz-bucket-region']
+                print(f"{Fore.CYAN} | Bucket Region: {bucket_region}")
+            else:
+                print(f"{Fore.LIGHTBLACK_EX} | Bucket {bucket} doesn't exist")
+                log_error(f" | Error: Bucket {bucket} doesn't exist")
+                break
 
             objects = s3_client.list_objects_v2(Bucket=bucket).get("Contents", [])
 
@@ -133,7 +150,7 @@ def download_bucket_objects(s3_client, buckets):
                         s3_client.download_fileobj(bucket, key, f)
                 except KeyboardInterrupt:
                     raise
-                except Exception as e:
+                except:
                     #print(f"\nError downloading {key}: {e}")
                     # Delete the file if download failed
                     delete_failed_files(local_path)
@@ -147,9 +164,10 @@ def download_bucket_objects(s3_client, buckets):
 
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write(" " * shutil.get_terminal_size((80, 20)).columns + "\r")
             print(f"{Fore.LIGHTBLACK_EX}Can't process bucket {bucket}")
+            log_error(f"Can't process bucket {bucket}\n | Error: {e}")
 
 # Brute-force AWS Account ID from a public bucket
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):

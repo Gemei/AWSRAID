@@ -2,3 +2,5 @@ boto3
 botocore
 colorama
 aws-assume-role-lib
+requests
+urllib3

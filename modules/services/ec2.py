@@ -1,8 +1,10 @@
 import modules.globals as my_globals
 from colorama import Fore
-import sys, base64
+import base64
+from modules.logger import *
 
 def ec2_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     if victim_session:
         enumerate_ec2(victim_session)
         list_ebs_volumes(victim_session)
@@ -25,10 +27,11 @@ def enumerate_ec2(victim_session):
                     get_userdata(ec2_client, instance)
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EC2 instances in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list EC2 instances in region {region}\n | Error:{e}")
     print("")
 
 def describe_ec2_instance(instance):
@@ -55,8 +58,9 @@ def describe_ec2_instance(instance):
                 print(f"{Fore.YELLOW}    {tag['Key']}: {tag['Value']}")
     except KeyboardInterrupt:
         raise
-    except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to describe EC2 instance")
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to describe EC2 instance: {instance_id}")
+        log_error(f"Failed to describe EC2 instance: {instance_id}\n | Error:{e}")
 
 def get_userdata(ec2_client, instance):
     try:
@@ -73,8 +77,9 @@ def get_userdata(ec2_client, instance):
             print(f"{Fore.YELLOW}  User Data: None")
     except KeyboardInterrupt:
         raise
-    except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to get EC2 instance userdata")
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to get EC2 instance {instance_id} userdata")
+        log_error(f"Failed to get EC2 instance {instance_id} userdata\n | Error:{e}")
 
 def list_ebs_volumes(victim_session):
     print(f"{Fore.GREEN}Enumerating EBS Volumes...")
@@ -86,10 +91,11 @@ def list_ebs_volumes(victim_session):
                 print(f"{Fore.MAGENTA}Region {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list EBS volumes in region {region}\n | Error:{e}")
     print("")
 
 def list_ebs_snapshots(victim_session):
@@ -104,10 +110,11 @@ def list_ebs_snapshots(victim_session):
                     print(f"{Fore.MAGENTA}Snapshot ID: {snapshot['SnapshotId']}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list EBS snapshots in region {region}\n | Error:{e}")
     print("")
 
 def list_ebs_public_snapshots(attacker_session):
@@ -124,10 +131,12 @@ def list_ebs_public_snapshots(attacker_session):
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
                 sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public snapshots found in region {region}")
                 sys.stdout.flush()
+                log_error(f"No public snapshots found in region {region}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list public EBS snapshots in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list public EBS snapshots in region {region}\n | Error:{e}")
     print("")

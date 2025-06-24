@@ -1,9 +1,11 @@
 from colorama import Fore
-import json, sys
+import json
 from modules.utils import custom_serializer
 import modules.globals as my_globals
+from modules.logger import *
 
 def rds_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     list_rds_instances(victim_session)
 
 def list_rds_instances(victim_session):
@@ -18,12 +20,14 @@ def list_rds_instances(victim_session):
                     print(f"{Fore.YELLOW}{json.dumps(db, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
-                except:
+                except Exception as e:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to format RDS instance data for {db['DBInstanceIdentifier']}")
+                    log_error(f"Failed to format RDS instance data for {db['DBInstanceIdentifier']}\n | Error:{e}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list RDS instances in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list RDS instances in region {region}\n | Error:{e}")
     print("")

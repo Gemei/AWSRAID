@@ -1,10 +1,12 @@
 from colorama import Fore
-import json, sys
+import json
 from modules.utils import custom_serializer
 import modules.globals as my_globals
 from botocore.config import Config
+from modules.logger import *
 
 def elastic_beanstalk_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     list_elastic_beanstalk(victim_session)
 
 def list_elastic_beanstalk(victim_session):
@@ -26,12 +28,14 @@ def list_elastic_beanstalk(victim_session):
                     print(f"{Fore.YELLOW}Environments:\n{json.dumps(envs, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
-                except:
+                except Exception as e:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to describe environments for application {app['ApplicationName']}")
+                    log_error(f"Failed to describe environments for application {app['ApplicationName']}\n | Error:{e}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Elastic Beanstalk applications in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list Elastic Beanstalk applications in region {region}\n | Error:{e}")
     print("")

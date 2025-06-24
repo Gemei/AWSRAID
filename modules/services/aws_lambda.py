@@ -1,12 +1,14 @@
 from colorama import Fore
-import json,sys,os,requests
+import json, requests
 from modules.utils import custom_serializer
 import modules.globals as my_globals
 from botocore.client import Config
+from modules.logger import *
 
 BASE_DOWNLOAD_PATH = "LOOT/Lambda_Functions/"
 
 def lambda_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     list_lambda_functions(victim_session)
 
 def ensure_dir_for_file(path):
@@ -29,8 +31,9 @@ def invoke_lambda_function(lambda_client, function, region):
             f"{Fore.MAGENTA}Region: {region} | Function: {function['FunctionName']} | \nResponse:\n {json.dumps(response_payload, indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
         raise
-    except:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to invoke Lambda functions")
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX}Failed to invoke Lambda function: {function['FunctionName']}")
+        log_error(f"Failed to invoke Lambda function: {function['FunctionName']}\n | Error:{e}")
 
 def get_environment_variables(lambda_client, function, region):
     try:
@@ -41,8 +44,9 @@ def get_environment_variables(lambda_client, function, region):
         )
     except KeyboardInterrupt:
         raise
-    except:
+    except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to get Lambda function configuration for: {function['FunctionName']}")
+        log_error(f"Failed to get Lambda function configuration for: {function['FunctionName']}\n | Error:{e}")
 
 def download_lambda_function(lambda_client, function, region):
     try:
@@ -58,8 +62,9 @@ def download_lambda_function(lambda_client, function, region):
         print(f"{Fore.MAGENTA}Region: {region} | Function: {function_name} | Code downloaded to {zip_file}")
     except KeyboardInterrupt:
         raise
-    except:
+    except Exception as e:
         print(f"{Fore.LIGHTBLACK_EX}Failed to download Lambda function code for: {function_name}")
+        log_error(f"Failed to download Lambda function code for: {function_name}\n | Error:{e}")
 
 def list_lambda_functions(victim_session):
     print(f"{Fore.GREEN}Enumerating Lambda Functions...")
@@ -77,8 +82,9 @@ def list_lambda_functions(victim_session):
                 download_lambda_function(lambda_client, function, region)
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Lambda functions in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list Lambda functions in region {region}\n | Error:{e}")
     print("")

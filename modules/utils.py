@@ -2,6 +2,7 @@ import os, sys
 import modules.globals as my_globals
 from datetime import datetime
 from colorama import Fore
+from modules.logger import *
 
 def print_banner():
     print(r"""        
@@ -31,6 +32,7 @@ def validate_wordlist(path, name):
     return None
 
 def validate_config(config):
+    enable_print_logging()
     my_globals.start_username_brute_force = config.get("start_username_brute_force") or False
     my_globals.start_role_name_brute_force = config.get("start_role_name_brute_force") or False
     my_globals.user_name_wordlist = config.get("user_name_wordlist") or "./wordlists/pacu_usernames_word_list.txt"

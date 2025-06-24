@@ -1,10 +1,12 @@
 from colorama import Fore
-import json, sys
+import json
 from modules.utils import custom_serializer
 import modules.globals as my_globals
 from botocore.config import Config
+from modules.logger import *
 
 def macie_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     list_macie_findings(victim_session)
 
 def list_macie_findings(victim_session):
@@ -21,12 +23,14 @@ def list_macie_findings(victim_session):
                     print(f"{Fore.YELLOW}Sample Findings:\n{json.dumps(details, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
-            except:
+            except IndexError as ie:
                 print(f"{Fore.LIGHTBLACK_EX}Failed to get finding details in region {region}")
+                log_error(f"Failed to get finding details in region {region}\n | Error:{ie}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list Macie findings in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list Macie findings in region {region}\n | Error:{e}")
     print("")

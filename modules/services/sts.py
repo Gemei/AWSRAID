@@ -1,8 +1,10 @@
 from botocore.exceptions import ClientError
 import modules.globals as my_globals
 from colorama import Fore
+from modules.logger import *
 
 def sts_init_enum(victim_sts_client, attacker_sts_client):
+    enable_print_logging()
     if victim_sts_client:
         get_victim_user(victim_sts_client)
     if attacker_sts_client:
@@ -32,7 +34,8 @@ def get_victim_user(sts_client):
                 f"\nSecret Key: {my_globals.victim_secret_access_key}"
                 f"\nSecurity Token: {my_globals.victim_session_token}"
                 f"\nError: {error_message}"
-                f"\nContinuing enumeration, but functionality may be limited..."
+                f"\nContinuing enumeration, but functionality may be limited...",
+                file=sys.stderr
             )
         elif error_code in ["InvalidClientTokenId", "UnrecognizedClientException"]:
             print(
@@ -40,7 +43,8 @@ def get_victim_user(sts_client):
                 f"\nAccess Key: {my_globals.victim_access_key}"
                 f"\nSecret Key: {my_globals.victim_secret_access_key}"
                 f"\nSecurity Token: {my_globals.victim_session_token}"
-                f"\nError: {error_message}"
+                f"\nError: {error_message}",
+                file=sys.stderr
             )
             exit(1)
         else:
@@ -48,7 +52,8 @@ def get_victim_user(sts_client):
                 f"{Fore.RED}ClientError occurred:"
                 f"\nError Code: {error_code}"
                 f"\nError: {error_message}"
-                f"\nExiting..."
+                f"\nExiting...",
+                file=sys.stderr
             )
             exit(1)
 
@@ -69,11 +74,13 @@ def get_victim_aws_account_id(sts_client):
         error_message = e.response['Error']['Message']
         if error_code == "InvalidClientTokenId":
             print(f"{Fore.LIGHTBLACK_EX}Failed to retrieve victim AWS account using access key: {my_globals.victim_access_key}"
-                  f" | Error: {error_message}"
+                  f" | Error: {error_message}",
+                  file=sys.stderr
             )
         else:
             print(
                 f"{Fore.LIGHTBLACK_EX}ClientError occurred:"
                 f"\nError Code: {error_code}"
-                f"\nError: {error_message}"
+                f"\nError: {error_message}",
+                file=sys.stderr
             )

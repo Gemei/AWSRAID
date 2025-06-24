@@ -1,9 +1,11 @@
 from colorama import Fore
-import json, sys
+import json
 from modules.utils import custom_serializer
 import modules.globals as my_globals
+from modules.logger import *
 
 def ssm_init_enum(victim_session, attacker_session):
+    enable_print_logging()
     list_ssm_parameters(victim_session)
 
 def list_ssm_parameters(victim_session):
@@ -17,12 +19,14 @@ def list_ssm_parameters(victim_session):
                 try:
                     value = ssm_client.get_parameter(Name=param['Name'], WithDecryption=True).get("Parameter", {})
                     print(f"{Fore.YELLOW}{json.dumps(value, indent=4, sort_keys=True, default=custom_serializer)}")
-                except:
+                except Exception as e:
                     print(f"{Fore.LIGHTBLACK_EX}Failed to get value for parameter: {param['Name']}")
+                    log_error(f"Failed to get value for parameter: {param['Name']}\n | Error: {e}")
         except KeyboardInterrupt:
             raise
-        except:
+        except Exception as e:
             sys.stdout.write("\r\033[K")
             sys.stdout.write(f"{Fore.LIGHTBLACK_EX}Failed to list SSM parameters in region {region}")
             sys.stdout.flush()
+            log_error(f"Failed to list SSM parameters in region {region}\n | Error: {e}")
     print("")
