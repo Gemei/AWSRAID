@@ -13,14 +13,14 @@ def ec2_init_enum(victim_session, attacker_session):
         list_ebs_public_snapshots(attacker_session)
 
 def enumerate_ec2(victim_session):
-    print(f"{Fore.GREEN}Enumerating EC2 Instances...")
+    print(f"{Fore.GREEN}[+] Enumerating EC2 Instances:")
     for region in my_globals.aws_regions:
         try:
             ec2_client = victim_session.client("ec2", region)
             reservations = ec2_client.describe_instances().get("Reservations", [])
             for reservation in reservations:
                 for instance in reservation.get("Instances", []):
-                    print(f"{Fore.MAGENTA}Region {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
+                    print(f"{Fore.MAGENTA} | Region {region} | Instance ID: {instance['InstanceId']} | State: {instance['State']['Name']}")
                     print(f"{Fore.CYAN} | Instance information:")
                     describe_ec2_instance(instance)
                     print(f"{Fore.CYAN} | Instance userdata:")
@@ -29,7 +29,7 @@ def enumerate_ec2(victim_session):
             raise
         except Exception as e:
             sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EC2 instances in region {region}")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX} | Failed to list EC2 instances in region {region}")
             sys.stderr.flush()
             log_error(f"\n | Error:{e}")
     print("")
@@ -59,7 +59,7 @@ def describe_ec2_instance(instance):
     except KeyboardInterrupt:
         raise
     except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to describe EC2 instance: {instance_id}")
+        print(f"{Fore.LIGHTBLACK_EX} | Failed to describe EC2 instance: {instance_id}")
         log_error(f"Failed to describe EC2 instance: {instance_id}\n | Error:{e}")
 
 def get_userdata(ec2_client, instance):
@@ -78,28 +78,28 @@ def get_userdata(ec2_client, instance):
     except KeyboardInterrupt:
         raise
     except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to get EC2 instance {instance_id} userdata")
+        print(f"{Fore.LIGHTBLACK_EX} | Failed to get EC2 instance {instance_id} userdata")
         log_error(f"Failed to get EC2 instance {instance_id} userdata\n | Error:{e}")
 
 def list_ebs_volumes(victim_session):
-    print(f"{Fore.GREEN}Enumerating EBS Volumes...")
+    print(f"{Fore.GREEN}[+] Enumerating EBS Volumes:")
     for region in my_globals.aws_regions:
         try:
             ec2_client = victim_session.client("ec2", region)
             volumes = ec2_client.describe_volumes().get("Volumes", [])
             for volume in volumes:
-                print(f"{Fore.MAGENTA}Region {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
+                print(f"{Fore.MAGENTA} | Region {region} | Volume ID: {volume['VolumeId']} | State: {volume['State']}")
         except KeyboardInterrupt:
             raise
         except Exception as e:
             sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS volumes in region {region}")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX} | Failed to list EBS volumes in region {region}")
             sys.stderr.flush()
             log_error(f"\n | Error:{e}")
     print("")
 
 def list_ebs_snapshots(victim_session):
-    print(f"{Fore.GREEN}Enumerating EBS Snapshots...")
+    print(f"{Fore.GREEN}[+] Enumerating EBS Snapshots:")
     for region in my_globals.aws_regions:
         try:
             ec2_client = victim_session.client("ec2", region)
@@ -112,13 +112,13 @@ def list_ebs_snapshots(victim_session):
             raise
         except Exception as e:
             sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list EBS snapshots in region {region}")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX} | Failed to list EBS snapshots in region {region}")
             sys.stderr.flush()
             log_error(f"\n | Error:{e}")
     print("")
 
 def list_ebs_public_snapshots(attacker_session):
-    print(f"{Fore.GREEN}Enumerating Public EBS Snapshots for Account: {my_globals.victim_aws_account_ID}...")
+    print(f"{Fore.GREEN}[+] Enumerating Public EBS Snapshots for Account: {my_globals.victim_aws_account_ID}:")
     for region in my_globals.aws_regions:
         try:
             attacker_ec2_client = attacker_session.client("ec2", region)
@@ -126,16 +126,16 @@ def list_ebs_public_snapshots(attacker_session):
             snapshots = response.get('Snapshots', [])
             if snapshots:
                 for snapshot in snapshots:
-                    print(f"{Fore.MAGENTA}Region: {region} | Snapshot ID: {snapshot['SnapshotId']}")
+                    print(f"{Fore.MAGENTA} | Region: {region} | Snapshot ID: {snapshot['SnapshotId']}")
             else:
                 sys.stdout.write("\r\033[K")  # \033[K clears from cursor to end of line
-                sys.stdout.write(f"{Fore.LIGHTBLACK_EX}No public EBS snapshots found in region {region}")
+                sys.stdout.write(f"{Fore.LIGHTBLACK_EX} | No public EBS snapshots found in region {region}")
                 sys.stdout.flush()
         except KeyboardInterrupt:
             raise
         except Exception as e:
             sys.stderr.write("\r\033[K")  # \033[K clears from cursor to end of line
-            sys.stderr.write(f"{Fore.LIGHTBLACK_EX}Failed to list public EBS snapshots in region {region}")
+            sys.stderr.write(f"{Fore.LIGHTBLACK_EX} | Failed to list public EBS snapshots in region {region}")
             sys.stderr.flush()
             log_error(f"\n | Error:{e}")
     print("")
