@@ -38,7 +38,7 @@ config = load_config(my_globals.CONFIG_FILE)
 
 def main():
     print_banner()
-    print(f"{Fore.GREEN}Starting AWS Enumeration Script...")
+    print(f"{Fore.GREEN}[*] Starting AWS Enumeration Script [*]")
     validate_config(config)
 
     victim_session, victim_clients = initialize_aws_regionless_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token)

