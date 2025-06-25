@@ -26,7 +26,7 @@ def list_sqs_queues(victim_session):
                         WaitTimeSeconds=10
                     )
                     messages = response.get("Messages", [])
-                    print(f"{Fore.YELLOW} | Messages:\n   {json.dumps(messages, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW} | Messages:\n{json.dumps(messages, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:

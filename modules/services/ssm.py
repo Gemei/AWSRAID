@@ -18,7 +18,7 @@ def list_ssm_parameters(victim_session):
                 print(f"{Fore.MAGENTA} | Region: {region} | SSM Parameter: {param['Name']}")
                 try:
                     value = ssm_client.get_parameter(Name=param['Name'], WithDecryption=True).get("Parameter", {})
-                    print(f"{Fore.YELLOW}   {json.dumps(value, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW}{json.dumps(value, indent=4, sort_keys=True, default=custom_serializer)}")
                 except Exception as e:
                     print(f"{Fore.LIGHTBLACK_EX} | Failed to get value for parameter: {param['Name']}")
                     log_error(f"Failed to get value for parameter: {param['Name']}\n | Error: {e}")

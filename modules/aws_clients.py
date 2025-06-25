@@ -22,7 +22,7 @@ def initialize_aws_regionless_victim_clients(victim_access_key, victim_secret_ac
     else:
         return None, None
 
-def initialize_aws_regionless_attacker_clients(attacker_access_key, attacker_secret_access_key, attacker_region):
+def initialize_aws_regionless_attacker_clients(attacker_access_key, attacker_secret_access_key):
     if attacker_access_key is not None and attacker_secret_access_key is not None:
         attacker_session = boto3.Session(
             aws_access_key_id=attacker_access_key,

@@ -20,7 +20,7 @@ def list_code_commit_repos(victim_session):
                 print(f"{Fore.MAGENTA} | Region: {region} | Repository: {repo['repositoryName']} | ID: {repo['repositoryId']}")
                 try:
                     repo_details = code_commit_client.get_repository(repositoryName=repo['repositoryName']).get("repositoryMetadata", {})
-                    print(f"{Fore.YELLOW}   {json.dumps(repo_details, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW}{json.dumps(repo_details, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:
@@ -28,7 +28,7 @@ def list_code_commit_repos(victim_session):
                     log_error(f"Failed to get repository metadata for {repo['repositoryName']}\n | Error:{e}")
                 try:
                     branches = code_commit_client.list_branches(repositoryName=repo['repositoryName']).get("branches", [])
-                    print(f"{Fore.YELLOW} | {repo['repositoryName']} branches:\n   {json.dumps(branches, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW} | {repo['repositoryName']} branches:\n{json.dumps(branches, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:

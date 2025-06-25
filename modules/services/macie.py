@@ -20,7 +20,7 @@ def list_macie_findings(victim_session):
             try:
                 if findings:
                     details = macie_client.get_findings(findingIds=findings[:5]).get("findings", [])
-                    print(f"{Fore.YELLOW} | Sample Findings:\n   {json.dumps(details, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW} | Sample Findings:\n{json.dumps(details, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
             except IndexError as ie:

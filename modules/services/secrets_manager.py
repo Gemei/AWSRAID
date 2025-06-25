@@ -19,7 +19,7 @@ def list_secrets_manager(victim_session):
                 print(f"{Fore.MAGENTA} | Region: {region} | Secret Name: {name}")
                 try:
                     secret_dump = secrets_client.get_secret_value(SecretId=name)
-                    print(f"{Fore.YELLOW}   {json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW}{json.dumps(secret_dump, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:

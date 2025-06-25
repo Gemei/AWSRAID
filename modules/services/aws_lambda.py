@@ -27,8 +27,7 @@ def invoke_lambda_function(lambda_client, function, region):
             Qualifier=function.get('Version', '$LATEST')
         )
         response_payload = json.loads(response['Payload'].read().decode('utf-8'))
-        print(
-            f"{Fore.MAGENTA} | Region: {region} | Function: {function['FunctionName']} | \nResponse:\n   {json.dumps(response_payload, indent=4, sort_keys=True, default=custom_serializer)}")
+        print(f"{Fore.MAGENTA} | Region: {region} | Function: {function['FunctionName']} | \nResponse:\n{json.dumps(response_payload, indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -39,8 +38,8 @@ def get_environment_variables(lambda_client, function, region):
     try:
         response = lambda_client.get_function_configuration(FunctionName=f"{function['FunctionName']}")
         print(
-            f"{Fore.YELLOW} | Region: {region} | Function: {function['FunctionName']} | \nConfiguration:\n"
-            f"   {json.dumps(response, indent=4, sort_keys=True, default=custom_serializer)}"
+            f"{Fore.YELLOW} | Region: {region} | Function: {function['FunctionName']}\n | Configuration:\n"
+            f"{json.dumps(response, indent=4, sort_keys=True, default=custom_serializer)}"
         )
     except KeyboardInterrupt:
         raise
