@@ -25,7 +25,7 @@ def list_elastic_beanstalk(victim_session):
                 print(f"{Fore.MAGENTA} | Region: {region} | Application: {app['ApplicationName']}")
                 try:
                     envs = eb_client.describe_environments(ApplicationName=app['ApplicationName']).get("Environments", [])
-                    print(f"{Fore.YELLOW} | Environments:\n   {json.dumps(envs, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW} | Environments:\n{json.dumps(envs, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:

@@ -42,7 +42,7 @@ def main():
     validate_config(config)
 
     victim_session, victim_clients = initialize_aws_regionless_victim_clients(my_globals.victim_access_key, my_globals.victim_secret_access_key, my_globals.victim_session_token)
-    attacker_session, attacker_clients = initialize_aws_regionless_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key, my_globals.attacker_region)
+    attacker_session, attacker_clients = initialize_aws_regionless_attacker_clients(my_globals.attacker_access_key, my_globals.attacker_secret_access_key)
 
     # For public access buckets
     initialize_aws_unsigned_s3_client()
@@ -64,8 +64,8 @@ def main():
     # These functions do not require a region to be set during client creation
     regionless_functions = [sts_init_enum, iam_init_enum, s3_init_enum]
 
-    # These functions would run if the user has only provided a public s3 bucket or AWS account ID
-    unauthenticated_functions = [iam_init_enum, s3_init_enum]
+    # These functions would run if the user has only provided a public s3 bucket, AWS account ID or Victim's AWS Access key
+    unauthenticated_functions = [sts_init_enum, iam_init_enum, s3_init_enum, ec2_init_enum, rds_init_enum]
 
     if has_attacker_creds() and has_victim_creds():
         for function in regionless_functions:
@@ -78,10 +78,6 @@ def main():
     elif has_attacker_creds() and not has_victim_creds():
         for function in unauthenticated_functions:
             function(None, attacker_session)
-        # Called to list public EBS snapshots for a given AWS account ID
-        ec2_init_enum(None, attacker_session)
-        # Called to list public RDS snapshots and cluster snapshots for a given AWS account ID
-        rds_init_enum(None, attacker_session)
 
     elif has_victim_creds() and not has_attacker_creds():
         for function in regionless_functions:

@@ -21,7 +21,7 @@ def list_rds_instances(victim_session):
             for db in dbs:
                 print(f"{Fore.MAGENTA} | Region: {region} | RDS: {db['DBInstanceIdentifier']} | Status: {db['DBInstanceStatus']}")
                 try:
-                    print(f"{Fore.YELLOW}   {json.dumps(db, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW}{json.dumps(db, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:

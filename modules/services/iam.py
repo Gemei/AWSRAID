@@ -5,7 +5,7 @@ from modules.utils import custom_serializer
 from botocore.exceptions import ClientError
 from modules.logger import *
 
-def iam_init_enum(victim_iam_client, attacker_client):
+def iam_init_enum(victim_iam_client, attacker_session):
     enable_print_logging()
     if victim_iam_client:
         list_iam_users(victim_iam_client, my_globals.victim_aws_account_ID)
@@ -16,10 +16,10 @@ def iam_init_enum(victim_iam_client, attacker_client):
         list_iam_roles(victim_iam_client, my_globals.victim_aws_account_ID)
         list_role_policies(victim_iam_client, my_globals.victim_roles)
         list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
-    if attacker_client and my_globals.user_name_wordlist and my_globals.start_username_brute_force:
-        brute_force_usernames(attacker_client)
-    if attacker_client and my_globals.user_name_wordlist and my_globals.start_role_name_brute_force:
-        brute_force_role_names(attacker_client)
+    if attacker_session and my_globals.user_name_wordlist and my_globals.start_username_brute_force:
+        brute_force_usernames(attacker_session)
+    if attacker_session and my_globals.user_name_wordlist and my_globals.start_role_name_brute_force:
+        brute_force_role_names(attacker_session)
 
 ########################## Users ##########################
 
@@ -107,7 +107,7 @@ def list_current_user_policies(iam_client, user_name):
                 print(f"{Fore.MAGENTA} | {policy_name}")
                 try:
                     policy_doc = iam_client.get_user_policy(UserName=user_name, PolicyName=policy_name)
-                    print(f"{Fore.YELLOW}   {json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                    print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:
@@ -153,7 +153,7 @@ def list_group_policies(iam_client, groups):
                         print(f"{Fore.MAGENTA} | {policy_name}")
                         try:
                             policy_doc = iam_client.get_group_policy(GroupName=group_name, PolicyName=policy_name)
-                            print(f"{Fore.YELLOW}   {json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                            print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
                         except KeyboardInterrupt:
                             raise
                         except Exception as e:
@@ -200,7 +200,7 @@ def list_role_policies(iam_client, roles):
                         print(f"{Fore.MAGENTA} | {policy_name}")
                         try:
                             policy_doc = iam_client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
-                            print(f"{Fore.YELLOW}   {json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                            print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
                         except KeyboardInterrupt:
                             raise
                         except Exception as e:
@@ -235,7 +235,7 @@ def describe_iam_policy(iam_client, policy_arn):
     try:
         version_id = iam_client.get_policy(PolicyArn=policy_arn)["Policy"]["DefaultVersionId"]
         policy_doc = iam_client.get_policy_version(PolicyArn=policy_arn, VersionId=version_id)["PolicyVersion"]["Document"]
-        print(f"{Fore.YELLOW}   {json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+        print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -247,7 +247,7 @@ def get_role_trust_policy(iam_client, role_name):
     try:
         role_detail = iam_client.get_role(RoleName=role_name)["Role"]
         print(f"{Fore.CYAN} | Trust Policy:")
-        print(f" {Fore.YELLOW}   {json.dumps(role_detail['AssumeRolePolicyDocument'], indent=4, sort_keys=True, default=custom_serializer)}")
+        print(f"{Fore.YELLOW}{json.dumps(role_detail['AssumeRolePolicyDocument'], indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -256,7 +256,7 @@ def get_role_trust_policy(iam_client, role_name):
 
 ########################## Brute force usernames and roles ##########################
 
-def brute_force_usernames(client):
+def brute_force_usernames(attacker_session):
     with open(str(my_globals.user_name_wordlist), 'r') as f:
         word_list = f.read().splitlines()
 
@@ -290,6 +290,7 @@ def brute_force_usernames(client):
                             }}]
                         }}'''.format(user_arn).strip()
 
+            client = attacker_session.client("iam")
             client.update_assume_role_policy(
                 RoleName=my_globals.attacker_IAM_role_name,
                 PolicyDocument=policy_doc,
@@ -314,7 +315,7 @@ def brute_force_usernames(client):
         sys.stdout.flush()
     print(f"{Fore.MAGENTA}\nFound {len(found_users)} users")
 
-def brute_force_role_names(client):
+def brute_force_role_names(attacker_session):
     with open(str(my_globals.role_name_wordlist), 'r') as f:
         word_list = f.read().splitlines()
 
@@ -349,6 +350,7 @@ def brute_force_role_names(client):
                             }}]
                         }}'''.format(role_arn).strip()
 
+            client = attacker_session.client("iam")
             client.update_assume_role_policy(
                 RoleName=my_globals.attacker_IAM_role_name,
                 PolicyDocument=policy_doc,
