@@ -90,7 +90,9 @@ Finally, all errors will be timestamped and logged in the `./ERROR` directory.
 ## To-Do
 - Generate a report for potential attack paths, e.g. privesc, leaked credentials, ...etc
 - Add API Gateway checks
-- Add canary detection
+- Add public cognito pool checks
+- Add canary/honey keys detection
+- If authenticated with assume role, list role inline and attached policies.
 - Add S3 bucket object versions listing and download
 - Add EC2 launch template enumeration
 - Add the option to specify an output file.
