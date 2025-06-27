@@ -11,6 +11,7 @@ victim_session_token = ""
 victim_buckets = ""
 victim_aws_account_ID = ""
 victim_aws_username = ""
+victim_aws_role_name = ""
 victim_groups = ""
 victim_roles = ""
 victim_regions = []
