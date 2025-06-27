@@ -20,7 +20,10 @@ def get_victim_user(sts_client):
             print(f"{Fore.CYAN} | ARN: {sts_caller_info['Arn']}")
         if my_globals.victim_aws_account_ID is None:
             my_globals.victim_aws_account_ID = sts_caller_info['Account']
-        my_globals.victim_aws_username = sts_caller_info["Arn"].split("/")[-1]
+        if "assumed-role" in sts_caller_info["Arn"]:
+            my_globals.victim_aws_role_name = sts_caller_info["Arn"].split("/")[1]
+        else:
+            my_globals.victim_aws_username = sts_caller_info["Arn"].split("/")[-1]
     except KeyboardInterrupt:
         raise
     except ClientError as e:

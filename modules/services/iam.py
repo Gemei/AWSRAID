@@ -9,13 +9,21 @@ def iam_init_enum(victim_iam_client, attacker_session):
     enable_print_logging()
     if victim_iam_client:
         list_iam_users(victim_iam_client, my_globals.victim_aws_account_ID)
-        list_current_user_policies(victim_iam_client, my_globals.victim_aws_username)
         list_iam_groups(victim_iam_client, my_globals.victim_aws_account_ID)
-        list_iam_groups_for_current_user(victim_iam_client, my_globals.victim_aws_username)
+        if my_globals.victim_aws_username:
+            list_current_user_policies(victim_iam_client, my_globals.victim_aws_username)
+            list_iam_groups_for_current_user(victim_iam_client, my_globals.victim_aws_username)
+        elif my_globals.victim_aws_role_name:
+            # Get trust policy details for the assumed role
+            get_role_trust_policy(victim_iam_client, my_globals.victim_aws_role_name)
+            # Get inline and attached role policies for the assumed role
+            get_inline_role_policies(victim_iam_client, my_globals.victim_aws_role_name)
+            get_attached_role_policies(victim_iam_client, my_globals.victim_aws_role_name)
         list_group_policies(victim_iam_client, my_globals.victim_groups)
         list_iam_roles(victim_iam_client, my_globals.victim_aws_account_ID)
         list_role_policies(victim_iam_client, my_globals.victim_roles)
         list_iam_policies(victim_iam_client, my_globals.victim_aws_account_ID)
+        exit(1)
     if attacker_session and my_globals.user_name_wordlist and my_globals.start_username_brute_force:
         brute_force_usernames(attacker_session)
     if attacker_session and my_globals.user_name_wordlist and my_globals.start_role_name_brute_force:
@@ -72,7 +80,7 @@ def list_iam_policies(iam_client, aws_id):
         policies = iam_client.list_policies(Scope='All').get("Policies", [])
         for policy in policies:
             if aws_id in policy['Arn']: # Only print customer managed policies
-                print(f"{Fore.CYAN}Policy: {policy['PolicyName']} | ARN: {policy['Arn']}")
+                print(f"{Fore.CYAN} | Policy: {policy['PolicyName']} | ARN: {policy['Arn']}")
                 describe_iam_policy(iam_client, policy['Arn'])
     except KeyboardInterrupt:
         raise
@@ -87,7 +95,7 @@ def list_iam_roles(iam_client, aws_id):
         my_globals.victim_roles = roles
         for role in roles:
             if aws_id in role['Arn']:  # Only print customer managed roles
-                print(f"{Fore.CYAN}Role: {role['RoleName']} | ARN: {role['Arn']}")
+                print(f"{Fore.CYAN} | Role: {role['RoleName']} | ARN: {role['Arn']}")
                 get_role_trust_policy(iam_client, role['RoleName'])
     except KeyboardInterrupt:
         raise
@@ -102,7 +110,7 @@ def list_current_user_policies(iam_client, user_name):
     try:
         inline_policies = iam_client.list_user_policies(UserName=user_name).get("PolicyNames", [])
         if inline_policies:
-            print(f"{Fore.CYAN}Inline Policies:")
+            print(f"{Fore.CYAN} | Inline Policies:")
             for policy_name in inline_policies:
                 print(f"{Fore.MAGENTA} | {policy_name}")
                 try:
@@ -124,7 +132,7 @@ def list_current_user_policies(iam_client, user_name):
     try:
         attached_policies = iam_client.list_attached_user_policies(UserName=user_name).get("AttachedPolicies", [])
         if attached_policies:
-            print(f"{Fore.CYAN}Attached Policies:")
+            print(f"{Fore.CYAN} | Attached Policies:")
             for policy in attached_policies:
                 print(f"{Fore.MAGENTA} | {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                 describe_iam_policy(iam_client, policy['PolicyArn'])
@@ -142,13 +150,13 @@ def list_group_policies(iam_client, groups):
     if groups:
         print(f"{Fore.GREEN}[+] Enumerating Policies For All Groups:")
         for group in groups:
-            print(f"{Fore.CYAN}Group: {group['Arn']}")
+            print(f"{Fore.CYAN} | Group: {group['Arn']}")
             group_name = group["GroupName"]
             try:
                 # Inline policies attached directly to the group
                 inline_policies = iam_client.list_group_policies(GroupName=group_name).get("PolicyNames", [])
                 if inline_policies:
-                    print(f"{Fore.CYAN}Inline Policies:")
+                    print(f"{Fore.CYAN} | Inline Policies:")
                     for policy_name in inline_policies:
                         print(f"{Fore.MAGENTA} | {policy_name}")
                         try:
@@ -171,7 +179,7 @@ def list_group_policies(iam_client, groups):
                 # Managed policies attached to the group
                 attached_policies = iam_client.list_attached_group_policies(GroupName=group_name).get("AttachedPolicies", [])
                 if attached_policies:
-                    print(f"{Fore.CYAN}Attached Policies:")
+                    print(f"{Fore.CYAN} | Attached Policies:")
                     for policy in attached_policies:
                         print(f"{Fore.MAGENTA} | {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
                         describe_iam_policy(iam_client, policy['PolicyArn'])
@@ -189,45 +197,51 @@ def list_role_policies(iam_client, roles):
     if roles:
         print(f"{Fore.GREEN}[+] Enumerating Policies For All Roles:")
         for role in roles:
-            print(f"{Fore.CYAN}Role: {role['Arn']}")
-            role_name = role["RoleName"]
-            try:
-                # Inline policies attached directly to the role
-                inline_policies = iam_client.list_role_policies(RoleName=role_name).get("PolicyNames", [])
-                if inline_policies:
-                    print(f"{Fore.CYAN}Inline Policies:")
-                    for policy_name in inline_policies:
-                        print(f"{Fore.MAGENTA} | {policy_name}")
-                        try:
-                            policy_doc = iam_client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
-                            print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
-                        except KeyboardInterrupt:
-                            raise
-                        except Exception as e:
-                            print(f"{Fore.LIGHTBLACK_EX} | Failed to describe policy {policy_name}")
-                            log_error(f"Failed to describe policy {policy_name}\n | Error:{e}")
-                else:
-                    print(f"{Fore.LIGHTBLACK_EX} | No inline policies found for role: {role_name}.")
-            except KeyboardInterrupt:
-                raise
-            except Exception as e:
-                print(f"{Fore.LIGHTBLACK_EX} | Failed to enumerate inline policies for group: {role_name}")
-                log_error(f"Failed to enumerate inline policies for group: {role_name}\n | Error:{e}")
-            try:
-                attached_policies = iam_client.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
-                if attached_policies:
-                    print(f"{Fore.CYAN}Attached Policies:")
-                    for policy in attached_policies:
-                        print(f"{Fore.MAGENTA} | {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
-                        if my_globals.victim_aws_account_ID in policy['PolicyArn']: # Only describe policy if its customer managed
-                            describe_iam_policy(iam_client, policy['PolicyArn'])
-                else:
-                    print(f"{Fore.LIGHTBLACK_EX} | No attached policies found for role: {role_name}.")
-            except KeyboardInterrupt:
-                raise
-            except Exception as e:
-                print(f"{Fore.LIGHTBLACK_EX} | Failed to enumerate attached policies for role: {role_name}")
-                log_error(f"Failed to enumerate attached policies for role: {role_name}\n | Error:{e}")
+            print(f"{Fore.CYAN} | Role ARN: {role['Arn']}")
+            get_inline_role_policies(iam_client, role["RoleName"])
+            get_attached_role_policies(iam_client, role["RoleName"])
+
+def get_inline_role_policies(iam_client, role_name):
+    try:
+        # Inline policies attached directly to the role
+        inline_policies = iam_client.list_role_policies(RoleName=role_name).get("PolicyNames", [])
+        if inline_policies:
+            print(f"{Fore.CYAN} | Inline Policies:")
+            for policy_name in inline_policies:
+                print(f"{Fore.MAGENTA} | {policy_name}")
+                try:
+                    policy_doc = iam_client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
+                    print(f"{Fore.YELLOW}{json.dumps(policy_doc, indent=4, sort_keys=True, default=custom_serializer)}")
+                except KeyboardInterrupt:
+                    raise
+                except Exception as e:
+                    print(f"{Fore.LIGHTBLACK_EX} | Failed to describe policy {policy_name}")
+                    log_error(f"Failed to describe policy {policy_name}\n | Error:{e}")
+        else:
+            print(f"{Fore.LIGHTBLACK_EX} | No inline policies found for role: {role_name}.")
+    except KeyboardInterrupt:
+        raise
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX} | Failed to enumerate inline policies for group: {role_name}")
+        log_error(f"Failed to enumerate inline policies for group: {role_name}\n | Error:{e}")
+
+def get_attached_role_policies(iam_client, role_name):
+    try:
+        attached_policies = iam_client.list_attached_role_policies(RoleName=role_name).get("AttachedPolicies", [])
+        if attached_policies:
+            print(f"{Fore.CYAN} | Attached Policies:")
+            for policy in attached_policies:
+                print(f"{Fore.MAGENTA} | {policy['PolicyName']} (ARN: {policy['PolicyArn']})")
+                if my_globals.victim_aws_account_ID in policy[
+                    'PolicyArn']:  # Only describe policy if its customer managed
+                    describe_iam_policy(iam_client, policy['PolicyArn'])
+        else:
+            print(f"{Fore.LIGHTBLACK_EX} | No attached policies found for role: {role_name}.")
+    except KeyboardInterrupt:
+        raise
+    except Exception as e:
+        print(f"{Fore.LIGHTBLACK_EX} | Failed to enumerate attached policies for role: {role_name}")
+        log_error(f"Failed to enumerate attached policies for role: {role_name}\n | Error:{e}")
 
 ########################## Helper functions: Describe policies and roles ##########################
 
@@ -245,9 +259,9 @@ def describe_iam_policy(iam_client, policy_arn):
 # Describes the role trust policy
 def get_role_trust_policy(iam_client, role_name):
     try:
-        role_detail = iam_client.get_role(RoleName=role_name)["Role"]
+        role_detail = iam_client.get_role(RoleName=role_name)
         print(f"{Fore.CYAN} | Trust Policy:")
-        print(f"{Fore.YELLOW}{json.dumps(role_detail['AssumeRolePolicyDocument'], indent=4, sort_keys=True, default=custom_serializer)}")
+        print(f"{Fore.YELLOW}{json.dumps(role_detail, indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
         raise
     except Exception as e:
@@ -268,7 +282,7 @@ def brute_force_usernames(attacker_session):
         print(f"{Fore.YELLOW}[*] You didn't supply victim AWS account ID in \"enum.config.json\" config file. Can't run username brute-force")
         return
 
-    print(f"{Fore.CYAN}Targeting aws account ID: {my_globals.victim_aws_account_ID} for username brute-force\n")
+    print(f"{Fore.CYAN} | Targeting aws account ID: {my_globals.victim_aws_account_ID} for username brute-force\n")
 
     found_users = []
 
@@ -328,7 +342,7 @@ def brute_force_role_names(attacker_session):
             f"{Fore.YELLOW}[*] You didn't supply victim AWS account ID in \"enum.config.json\" config file. Can't run role name brute-force")
         return
 
-    print(f"{Fore.CYAN}Targeting aws account ID: {my_globals.victim_aws_account_ID} for role name brute-force\n")
+    print(f"{Fore.CYAN} | Targeting aws account ID: {my_globals.victim_aws_account_ID} for role name brute-force\n")
 
     found_roles = []
 
