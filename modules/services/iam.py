@@ -259,7 +259,7 @@ def describe_iam_policy(iam_client, policy_arn):
 # Describes the role trust policy
 def get_role_trust_policy(iam_client, role_name):
     try:
-        role_detail = iam_client.get_role(RoleName=role_name)
+        role_detail = iam_client.get_role(RoleName=role_name)["Role"]
         print(f"{Fore.CYAN} | Trust Policy:")
         print(f"{Fore.YELLOW}{json.dumps(role_detail, indent=4, sort_keys=True, default=custom_serializer)}")
     except KeyboardInterrupt:
